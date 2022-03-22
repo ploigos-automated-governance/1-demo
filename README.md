@@ -30,29 +30,53 @@ helm install -f values.yaml everything-pipeline .
 
 ```
 
-13. Change default image to ploigos-tool-maven in TriggerTemplate
-oc get tt ploigos-workflow-ref-quarkus-mvn-fruit -o yaml > tt.yml
-vi tt.yml 
-       - name: workflowWorkerImageDefault
-         value: quay.io/ploigos/ploigos-tool-maven:latest
-oc create ...
+12. Fork the demo app
+* Look up the Gitea URL
+  * `oc get route gitea -o yaml | yq .status.ingress[].host`
+* Look up the Gitea username
+  * `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo`
+* Look up the Gitea password
+  * `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo`
+* Using the above URL / username / password, log into Gitea using your browser.
+* Create a new repository for the demo app in the "platform" organization
+  * Organization (small tab on the right side of the screen) -> platform -> New Repository
+  * Repository Name: `reference-quarkus-mvn`
+  * Select "Create Repository"
+  * Select the clipboard icon to copy the HTTPS clone URL
+  * Save that URL but don't use it yet
+* Clone the upstream repository for the demo app
+  * `git clone https://github.com/ploigos-reference-apps/reference-quarkus-mvn.git`
+  * `cd reference-quarkus-mvn`
+* Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved
+  * `git remote set-url origin <<YOUR URL>>`
+* Push the upstream code to the new repo that you created in Gitea
+  * `git push`
+  * Enter the username and password from above
+  * `cd ..`
 
-14. Get gitea admin user
-oc get secret gitea-admin-credentials -o yaml # get password
-echo -n [whatever] | base64 -d # decode password
-oc get route gitea
+13. Fork the gitops repo for the demo application
+* Continue using the Gitea UI. Use the same URL / username / password from the previous step.
+* Navigate to the dashboard view (select "Dashboard" from the top menu).
+* Create a new repository for the demo app's gitops repo in the "platform" organization
+    * Organization (small tab on the right side of the screen) -> platform -> New Repository
+    * Repository Name: `reference-quarkus-mvn-gitops`
+    * Select "Create Repository"
+    * Select the clipboard icon to copy the HTTPS clone URL
+    * Save that URL but don't use it yet
+* Clone the upstream gitops repository for the demo app
+    * `git clone https://github.com/ploigos-reference-apps/reference-quarkus-mvn-cloud-resources_tekton_workflow-everything.git`
+    * `cd reference-quarkus-mvn-cloud-resources_tekton_workflow-everything`
+* Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved
+    * `git remote set-url origin <<YOUR URL>>`
+* Push the upstream code to the new repo that you created in Gitea
+    * `git push`
+    * Enter the username and password from above if prompted
+  * `cd ..`
 
-15. Clone demo app
-git clone https://gitea-devsecops.apps.cluster-fd74.fd74.sandbox195.opentlc.com/platform/reference-quarkus-mvn.git
-git checkout -b feature/demo
-git push --set-upstream origin feature/demo
-
-16. Login to gitea and create a PR
-
-17. Create webhook in gitea for demo app
+15. Create webhook in gitea for demo app
 settings -> webhooks -> just like github
 
-18. Update configmap and secret with new config for generate-evidence
+16. Update configmap and secret with new config for generate-evidence
 
  generate-evidence:
   - name: Generate and Push Evidence
@@ -120,6 +144,8 @@ with:
 ```shell
 oc apply -f ploigos-platform-config-hack.yml
 ```
+
+14. Login to gitea and create a PR
 
 == Troubleshooting
 1. To get the admin credentials for ArgoCD:
