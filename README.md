@@ -77,31 +77,37 @@ helm install -f values.yaml everything-pipeline .
     * Enter the username and password from above if prompted
   * `cd ..`
 
-10. Export the ploigos platform configuration
+10. Export the Ploigos platform configuration.
 ```shell
-oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq 'del(.metadata) | .metadata.name = "ploigos-platform-config-demo" | .metadata.namespace = "devsecops"' > ploigos-platform-config-demo-cm.yml
+oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq .data[] > config.yml
 oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq .data[] | base64 -d > config-secrets.yml
 ```
 
-11. Update configmap and secret with new config for generate-evidence
+11. Add Ploigos platform configuration for the generate-evidence step.
+* Edit `config.yml` and add this to the bottom. Preserve the indentation (2 spaces).
 ```yaml
- generate-evidence:
+  generate-evidence:
   - name: Generate and Push Evidence
     implementer: GenerateEvidence
     config:
-      evidence-destination-url: https://nexus.apps.tssc.rht-set.com/repository/release-engineering-workflow-evidence/
-      evidence-destination-username: sa-ploigos-ref-apps
+      evidence-destination-url: http://nexus-sonatype-nexus-service.devsecops.svc.cluster.local:8081/repository/release-engineering-workflow-evidence/
+      evidence-destination-username: ploigos
   - name: Sign Evidence
     implementer: RekorSignEvidence
     config:
-      rekor-server-url: https://rekor.apps.tssc.rht-set.com/
-
-    generate-evidence:
-    -   name: Generate and Push Evidence
-        implementer: GenerateEvidence
-        config:
-            evidence-destination-password: [whatever]
+      rekor-server-url: REKOR_SERVER_URL
 ```
+* Replace `REKOR_SERVER_URL` with the output of `echo "https://$(oc get route rekor-server -n sigstore -o yaml | yq '.status.ingress[].host')/"`
+* Save `config.yml`.
+* Edit `config-secrets.yml` and add this to the bottom. Preserve the indentation (2 spaces).
+```yaml
+  generate-evidence:
+  - name: Generate and Push Evidence
+      implementer: GenerateEvidence
+      config:
+          evidence-destination-password: EVIDENCE_DESTINATION_PASSWORD
+```
+* Replace `EVIDENCE_DESTINATION_PASSWORD` with the value of `results-archive-destination-password`. This value should be on the last line of the file before you added the generate-evidence snippet.
 
 11. Update configmap and secret with new config for audit-attestation
 ```yaml
