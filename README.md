@@ -147,12 +147,15 @@ oc apply -f ploigos-platform-config-hack.yml
 ```
 
 15. Create webhook in gitea for demo app
-* settings -> webhooks -> just like github
+* Settings -> Webhooks -> Add Webhook
+* Payload URL - Enter the Tekton EventListener webhook URL for your cluster.
+* Content Type: `application/json`
+* SSL Verification - `false`
 
 16. Login to gitea and create a PR
 
 
 # Troubleshooting
-1. To get the admin credentials for ArgoCD:
-* `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo`
-* `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo`
+* To get the admin credentials for ArgoCD:
+  * `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo`
+  * `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo`
