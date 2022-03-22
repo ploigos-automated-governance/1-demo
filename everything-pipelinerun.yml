@@ -16,7 +16,7 @@ spec:
     - name: appRepoUrl
       value: https://gitea-devsecops.apps.cluster-fd74.fd74.sandbox195.opentlc.com/platform/reference-quarkus-mvn
     - name: appRepoRef
-      value: main
+      value: feature/demo
     - name: stepRunnerConfigDir
       value: /opt/platform-config/ /opt/platform-config-secrets/ cicd/ploigos-software-factory-operator/ploigos-step-runner-config/
     - name: pgpKeysSecretName
@@ -71,10 +71,6 @@ spec:
     name: app3-service1
   resources: []
   serviceAccountName: ploigos-workflow-ref-quarkus-mvn-fruit
-  taskRunSpecs:
-    - pipelineTaskName: setup-app-clone
-      taskPodTemplate: {}
-      taskServiceAccountName: ploigos-workflow-ref-quarkus-mvn-fruit
   workspaces:
     - name: home
       volumeClaimTemplate:
@@ -97,4 +93,4 @@ spec:
       name: ploigos-platform-config
     - name: ploigos-platform-config-secrets
       secret:
-        secretName: ploigos-platform-config-secrets-mvn-hack
+        secretName: ploigos-platform-config-secrets-hack
