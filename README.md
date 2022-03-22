@@ -125,19 +125,36 @@ oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq .data[] | base64 
         workflow-policy-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-autogov-content/main/workflow-policy-prod.rego
 ```
 
-12. Update pgp private key for signing evidence
+13. Update pgp private key for signing evidence
 ```shell
 `PKEY=$(yq '.step-runner-config.sign-container-image[].config.container-image-signer-pgp-private-key' config-secrets.yml)
 `yq -i ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" config-secrets.yml`
 ```
 
-13. Create a new ConfigMap and Secret with the updated Ploigos platform configuration.
+14. Add Ploigos platform configuration for the container-image-static-compliance-scan step
+* Edit `config.yml` and add this to the bottom. Preserve the indentation (2 spaces).
+```yaml
+  container-image-static-compliance-scan:
+    - name: OpenSCAP - Compliance - SSG RHEL8
+      implementer: OpenSCAP
+      config:
+        oscap-input-definitions-uri: https://raw.githubusercontent.com/RedHatGov/rhel8-stig-latest/master/ssg-rhel8-ds.xml
+        oscap-tailoring-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-oscap-content/main/xccdf_com.ploigos_profile_standard_compliance_ploigos_reference_apps-tailoring.xml
+        oscap-profile: xccdf_com.ploigos_profile_standard_compliance_ploigos_reference_apps
+```
+
+16. Create a new ConfigMap and Secret with the updated Ploigos platform configuration.
 ```shell
 oc create cm ploigos-platform-config-demo --from-file=config.yml
 oc create secret generic ploigos-platform-config-secrets-demo --from-file config-secrets.yml
 ```
 
-16. Create webhook in gitea for demo app
+14. Test the pipeline with the new configuration
+```shell
+oc create -f everything-pipelinerun.yml 
+```
+
+15. Create webhook in gitea for demo app
 * Settings -> Webhooks -> Add Webhook
 * Payload URL - Enter the Tekton EventListener webhook URL for your cluster.
 * Content Type: `application/json`
