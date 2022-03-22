@@ -21,7 +21,11 @@ Use the OpenShift UI.
 oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quickstart/main/argo-cd-apps/app-of-apps/software-supply-chain-platform-ploigos-swf.yml
 ```
 
-11. Install the everything pipeline using helm
+6. Expose a Rekor route
+```shell
+oc expose service rekor-server -n sigstore
+```
+7. Install the everything pipeline using helm
 ```shell
 git clone https://github.com/ploigos/ploigos-charts.git
 cp values.yaml ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
@@ -30,7 +34,7 @@ helm install -f values.yaml everything-pipeline .
 
 ```
 
-12. Fork the demo app
+8. Fork the demo app
 * Look up the Gitea URL
   * `oc get route gitea -o yaml | yq .status.ingress[].host`
 * Look up the Gitea username
@@ -54,7 +58,7 @@ helm install -f values.yaml everything-pipeline .
   * Enter the username and password from above
   * `cd ..`
 
-13. Fork the gitops repo for the demo application
+9. Fork the gitops repo for the demo application
 * Continue using the Gitea UI. Use the same URL / username / password from the previous step.
 * Navigate to the dashboard view (select "Dashboard" from the top menu).
 * Create a new repository for the demo app's gitops repo in the "platform" organization
@@ -73,10 +77,7 @@ helm install -f values.yaml everything-pipeline .
     * Enter the username and password from above if prompted
   * `cd ..`
 
-15. Create webhook in gitea for demo app
-settings -> webhooks -> just like github
-
-16. Update configmap and secret with new config for generate-evidence
+10. Update configmap and secret with new config for generate-evidence
 
  generate-evidence:
   - name: Generate and Push Evidence
@@ -96,7 +97,7 @@ settings -> webhooks -> just like github
             evidence-destination-password: [whatever]
 
 
-1. Update configmap and secret with new config for audit-attestation
+11. Update configmap and secret with new config for audit-attestation
 
   audit-attestation:
   - name: Audit Attestation DEV
@@ -122,13 +123,6 @@ git commit -am "Remove ConfigLint StepImplementer"
 git push
 ```
 
-2. Expose a Rekor route
-   **TODO:** turn pruning back on for rekor application when we no longer have to do this manually.
-```shell
-oc expose service rekor-server -n sigstore
-oc get route rekor-server -n sigstore
-```
-
 1. Update Rekor url in ConfigMap
 ```shell
 oc get cm -o yaml ploigos-platform-config-hack > ploigos-platform-config-hack.yml
@@ -145,7 +139,11 @@ with:
 oc apply -f ploigos-platform-config-hack.yml
 ```
 
-14. Login to gitea and create a PR
+15. Create webhook in gitea for demo app
+    settings -> webhooks -> just like github
+
+16. Login to gitea and create a PR
+
 
 == Troubleshooting
 1. To get the admin credentials for ArgoCD:
