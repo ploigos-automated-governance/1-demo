@@ -8,11 +8,13 @@ oc create -f tekton-platform.yml```
 ```
 **WE STOPPED HERE IN THE ARO CLUSTER**
 
-3. Resize the nexus pvc to 50 GiB.
+3. Resize the Nexus PVC to 100 GiB.
 Use the OpenShift UI.
-* Storage -> Filter by project "devsecops" -> search "nexus" -> Select the pvc for the nexus Pod -> Actions -> Resize
-* Enter 50 GiB
-* OK
+* Storage -> PersistentVolumeClaims -> Search for "nexus-sonatype-nexus-data" -> Select the pvc -> Actions -> Expand PVC
+* 100 GiB
+* Select "Expand"
+* Restart the nexus pod: Pods -> Click the 3 dots icon next to "nexus-sonatype-nexus-..." -> Delete Pod
+* Select "Delete"
 
 5. Install Rekor
 ```shell
