@@ -131,25 +131,10 @@ oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq .data[] | base64 
 `yq -i ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" config-secrets.yml`
 ```
 
-13. Update Rekor url in ConfigMap
+13. Create a new ConfigMap and Secret with the updated Ploigos platform configuration.
 ```shell
-oc get cm -o yaml ploigos-platform-config-hack > ploigos-platform-config-hack.yml
-```
-Edit the file and replace:
-```yaml
-          rekor-server-url: https://rekor.apps.tssc.rht-set.com/
-```
-with:
-```yaml
-          rekor-server-url: https://[[[hostname from above]]]/
-```
-```shell
-oc apply -f ploigos-platform-config-hack.yml
-```
-
-14. Apply the changes to the Ploigos platform configuration
-```shell
-oc create secret generic ploigos-platform-config-secrets-hack --from-file /tmp/platform-config-secret.yml
+oc create cm ploigos-platform-config-demo --from-file=config.yml
+oc create secret generic ploigos-platform-config-secrets-demo --from-file config-secrets.yml
 ```
 
 16. Create webhook in gitea for demo app
