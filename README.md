@@ -202,8 +202,8 @@ oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq .data[] | base64 
 
 17. Create a new ConfigMap and Secret with the updated Ploigos platform configuration.
 ```shell
-oc create cm ploigos-platform-config-demo --from-file=config.yml
-oc create secret generic ploigos-platform-config-secrets-demo --from-file config-secrets.yml
+oc create cm ploigos-platform-config-demo --from-file=config.yml -n devsecops
+oc create secret generic ploigos-platform-config-secrets-demo --from-file config-secrets.yml -n devsecops
 ```
 
 18. Test the pipeline with the new configuration
