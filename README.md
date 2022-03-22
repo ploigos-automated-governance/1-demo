@@ -8,7 +8,13 @@ oc create -f tekton-platform.yml```
 ```
 **WE STOPPED HERE IN THE ARO CLUSTER**
 
-3. Install Rekor
+3. Resize the nexus pvc to 50 GiB.
+Use the OpenShift UI.
+* Storage -> Filter by project "devsecops" -> search "nexus" -> Select the pvc for the nexus Pod -> Actions -> Resize
+* Enter 50 GiB
+* OK
+
+5. Install Rekor
 ```shell
 oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quickstart/main/argo-cd-apps/base/software-supply-chain-platform/rekor.yml
 ```
