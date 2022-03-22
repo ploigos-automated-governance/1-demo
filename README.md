@@ -21,42 +21,38 @@ Use the OpenShift UI.
 oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quickstart/main/argo-cd-apps/app-of-apps/software-supply-chain-platform-ploigos-swf.yml
 ```
 
-5. Rename secret and configmap
- oc get cm -o yaml ploigos-platform-config-mvn > cm.yml
- vi cm.yml # change name to ploigos-platform-config
- oc apply -f cm.yml 
- oc get secret ploigos-platform-config-secrets-mvn -o yaml > secret.yml
- vi secret.yml # change name to ploigos-platform-config-secrets
- oc create -f secret.yml 
+11. Install the everything pipeline using helm
+```shell
+git clone https://github.com/ploigos/ploigos-charts.git
+cp values.yaml ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
+pushd ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
+helm install -f values.yaml everything-pipeline .
 
-6. Change default image to ploigos-tool-maven in TriggerTemplate
+```
+
+13. Change default image to ploigos-tool-maven in TriggerTemplate
 oc get tt ploigos-workflow-ref-quarkus-mvn-fruit -o yaml > tt.yml
 vi tt.yml 
-      - name: workflowWorkerImageDefault
-        value: quay.io/ploigos/ploigos-tool-maven:latest
+       - name: workflowWorkerImageDefault
+         value: quay.io/ploigos/ploigos-tool-maven:latest
 oc create ...
 
-7. Get gitea admin user
+14. Get gitea admin user
 oc get secret gitea-admin-credentials -o yaml # get password
 echo -n [whatever] | base64 -d # decode password
 oc get route gitea
 
-8. Clone demo app
+15. Clone demo app
 git clone https://gitea-devsecops.apps.cluster-fd74.fd74.sandbox195.opentlc.com/platform/reference-quarkus-mvn.git
 git checkout -b feature/demo
 git push --set-upstream origin feature/demo
 
-9. Login to gitea and create a PR
+16. Login to gitea and create a PR
 
-10. Create webhook in gitea for demo app
+17. Create webhook in gitea for demo app
 settings -> webhooks -> just like github
 
-11. Install helm chart for everything pipeline
-clone ploigos-charts
-copy values.yml from this repo to the tekton everything-pipeline directory
-helm install -f values.yaml everything-pipeline .
-
-12. Update configmap and secret with new config for generate-evidence
+18. Update configmap and secret with new config for generate-evidence
 
  generate-evidence:
   - name: Generate and Push Evidence
