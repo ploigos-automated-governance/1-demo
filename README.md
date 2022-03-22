@@ -1,6 +1,6 @@
-# Post-Install Instructions
+# Setup Instructions
 
-1. Install the Ploigos Software Factory Operator. Do steps 1-5 of the [Operator README quickstart instructions](https://github.com/ploigos/ploigos-software-factory-operator/#quick-start). **STOP AFTER STEP #5.**
+1. Install the Ploigos Software Factory Operator. Follow steps 1-5 of the [Operator README quickstart instructions](https://github.com/ploigos/ploigos-software-factory-operator/#quick-start). **STOP AFTER STEP #5.**
 
 2. Create a PloigosPlatform.
 ```shell
@@ -98,7 +98,7 @@ helm install -f values.yaml everything-pipeline .
 ```
 
 11. Update configmap and secret with new config for audit-attestation
-
+```yaml
   audit-attestation:
   - name: Audit Attestation DEV
     implementer: OpenPolicyAgent
@@ -109,13 +109,16 @@ helm install -f values.yaml everything-pipeline .
         workflow-policy-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-autogov-content/main/workflow-policy-test.rego
       PROD:
         workflow-policy-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-autogov-content/main/workflow-policy-prod.rego
-  
-1. Update pgp private key for signing evidence
+```
+
+12. Update pgp private key for signing evidence
+```shell
 PKEY=$(sops -d ~/ploigos/demo/reference-quarkus-mvn/cicd/ploigos-integration-environment/tekton/everything/ploigos-step-runner-config/shared-config/config-secrets.yml  | yq .step-runner-config.global-defaults.signer-pgp-private-key)
 cat platform-config-secret.yml | yq ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" > /tmp/platform-config-secret.yml
 oc create secret generic ploigos-platform-config-secrets-hack --from-file /tmp/platform-config-secret.yml
+```
 
-1. Update Rekor url in ConfigMap
+13. Update Rekor url in ConfigMap
 ```shell
 oc get cm -o yaml ploigos-platform-config-hack > ploigos-platform-config-hack.yml
 ```
@@ -132,12 +135,12 @@ oc apply -f ploigos-platform-config-hack.yml
 ```
 
 15. Create webhook in gitea for demo app
-    settings -> webhooks -> just like github
+* settings -> webhooks -> just like github
 
 16. Login to gitea and create a PR
 
 
-== Troubleshooting
+# Troubleshooting
 1. To get the admin credentials for ArgoCD:
 * `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo`
 * `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo`
