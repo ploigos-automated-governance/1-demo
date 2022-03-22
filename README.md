@@ -4,7 +4,10 @@
 
 2. Create a PloigosPlatform. **DO NOT CREATE A PLOIGOSPIPELINE**
 
-3. Install rekor
+3. Install Rekor
+```
+oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quickstart/main/argo-cd-apps/base/software-supply-chain-platform/rekor.yml
+```
 
 4. Rename secret and configmap
  oc get cm -o yaml ploigos-platform-config-mvn > cm.yml
