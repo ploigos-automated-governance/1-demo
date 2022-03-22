@@ -81,6 +81,7 @@ oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quick
 ```shell
 oc expose service rekor-server -n sigstore
 ```
+
 9. Install the everything pipeline using helm
 ```shell
 git clone https://github.com/ploigos/ploigos-charts.git
@@ -146,7 +147,7 @@ oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq .data[] | base64 
   - name: Generate and Push Evidence
     implementer: GenerateEvidence
     config:
-      evidence-destination-url: http://nexus-sonatype-nexus-service.devsecops.svc.cluster.local:8081/repository/release-engineering-workflow-evidence/
+      evidence-destination-url: http://nexus-sonatype-nexus-service.devsecops.svc.cluster.local:8081/repository/workflow-evidence
       evidence-destination-username: ploigos
   - name: Sign Evidence
     implementer: RekorSignEvidence
