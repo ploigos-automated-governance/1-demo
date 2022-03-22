@@ -18,7 +18,7 @@ Use the OpenShift UI.
 
 5. Install Rekor
 ```shell
-oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quickstart/main/argo-cd-apps/base/software-supply-chain-platform/rekor.yml
+oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quickstart/main/argo-cd-apps/app-of-apps/software-supply-chain-platform-ploigos-swf.yml
 ```
 
 5. Rename secret and configmap
@@ -124,3 +124,8 @@ with:
 ```shell
 oc apply -f ploigos-platform-config-hack.yml
 ```
+
+== Troubleshooting
+1. To get the admin credentials for ArgoCD:
+* `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo`
+* `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo`
