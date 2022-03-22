@@ -1,8 +1,12 @@
 # Post-Install Instructions
 
-1. Install the Ploigos Software Factory Operator
+1. Install the Ploigos Software Factory Operator. Do steps 1-5 of the [Operator README quickstart instructions](https://github.com/ploigos/ploigos-software-factory-operator/#quick-start). **STOP AFTER STEP #5.**
 
-2. Create a PloigosPlatform. **DO NOT CREATE A PLOIGOSPIPELINE**
+2. Create a PloigosPlatform.
+```shell
+oc create -f tekton-platform.yml```
+```
+**WE STOPPED HERE IN THE ARO CLUSTER**
 
 3. Install Rekor
 ```shell
