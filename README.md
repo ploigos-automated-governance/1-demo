@@ -103,13 +103,15 @@ oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq .data[] | base64 
 ```yaml
   generate-evidence:
   - name: Generate and Push Evidence
-      implementer: GenerateEvidence
-      config:
-          evidence-destination-password: EVIDENCE_DESTINATION_PASSWORD
+    implementer: GenerateEvidence
+    config:
+      evidence-destination-password: EVIDENCE_DESTINATION_PASSWORD
 ```
 * Replace `EVIDENCE_DESTINATION_PASSWORD` with the value of `results-archive-destination-password`. This value should be on the last line of the file before you added the generate-evidence snippet.
+* Save `config-secrets.yml`.
 
-11. Update configmap and secret with new config for audit-attestation
+12. Add Ploigos platform configuration for the audit-attestation step.
+* Edit `config.yml` and add this to the bottom. Preserve the indentation (2 spaces).
 ```yaml
   audit-attestation:
   - name: Audit Attestation DEV
@@ -125,9 +127,8 @@ oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq .data[] | base64 
 
 12. Update pgp private key for signing evidence
 ```shell
-PKEY=$(sops -d ~/ploigos/demo/reference-quarkus-mvn/cicd/ploigos-integration-environment/tekton/everything/ploigos-step-runner-config/shared-config/config-secrets.yml  | yq .step-runner-config.global-defaults.signer-pgp-private-key)
-cat platform-config-secret.yml | yq ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" > /tmp/platform-config-secret.yml
-oc create secret generic ploigos-platform-config-secrets-hack --from-file /tmp/platform-config-secret.yml
+`PKEY=$(yq '.step-runner-config.sign-container-image[].config.container-image-signer-pgp-private-key' config-secrets.yml)
+`yq -i ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" config-secrets.yml`
 ```
 
 13. Update Rekor url in ConfigMap
@@ -146,7 +147,12 @@ with:
 oc apply -f ploigos-platform-config-hack.yml
 ```
 
-15. Create webhook in gitea for demo app
+14. Apply the changes to the Ploigos platform configuration
+```shell
+oc create secret generic ploigos-platform-config-secrets-hack --from-file /tmp/platform-config-secret.yml
+```
+
+16. Create webhook in gitea for demo app
 * Settings -> Webhooks -> Add Webhook
 * Payload URL - Enter the Tekton EventListener webhook URL for your cluster.
 * Content Type: `application/json`
