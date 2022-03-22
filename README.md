@@ -49,7 +49,7 @@ helm install -f values.yaml everything-pipeline .
   * Select the clipboard icon to copy the HTTPS clone URL
   * Save that URL but don't use it yet
 * Clone the upstream repository for the demo app
-  * `git clone https://github.com/ploigos-reference-apps/reference-quarkus-mvn.git`
+  * `git clone https://github.com/ploigos-automated-governance/reference-quarkus-mvn.git`
   * `cd reference-quarkus-mvn`
 * Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved
   * `git remote set-url origin <<YOUR URL>>`
@@ -68,7 +68,7 @@ helm install -f values.yaml everything-pipeline .
     * Select the clipboard icon to copy the HTTPS clone URL
     * Save that URL but don't use it yet
 * Clone the upstream gitops repository for the demo app
-    * `git clone https://github.com/ploigos-reference-apps/reference-quarkus-mvn-cloud-resources_tekton_workflow-everything.git`
+    * `git clone https://github.com/ploigos-automated-governance/reference-quarkus-mvn-gitops.git`
     * `cd reference-quarkus-mvn-cloud-resources_tekton_workflow-everything`
 * Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved
     * `git remote set-url origin <<YOUR URL>>`
@@ -78,7 +78,7 @@ helm install -f values.yaml everything-pipeline .
   * `cd ..`
 
 10. Update configmap and secret with new config for generate-evidence
-
+```yaml
  generate-evidence:
   - name: Generate and Push Evidence
     implementer: GenerateEvidence
@@ -95,7 +95,7 @@ helm install -f values.yaml everything-pipeline .
         implementer: GenerateEvidence
         config:
             evidence-destination-password: [whatever]
-
+```
 
 11. Update configmap and secret with new config for audit-attestation
 
@@ -114,14 +114,6 @@ helm install -f values.yaml everything-pipeline .
 PKEY=$(sops -d ~/ploigos/demo/reference-quarkus-mvn/cicd/ploigos-integration-environment/tekton/everything/ploigos-step-runner-config/shared-config/config-secrets.yml  | yq .step-runner-config.global-defaults.signer-pgp-private-key)
 cat platform-config-secret.yml | yq ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" > /tmp/platform-config-secret.yml
 oc create secret generic ploigos-platform-config-secrets-hack --from-file /tmp/platform-config-secret.yml
-
-
-1. Remove ConfigLint step implementer from checked-in config.yml
-```shell
-yq -i 'del(.step-runner-config.validate-environment-configuration)' cicd/ploigos-software-factory-operator/ploigos-step-runner-config/config.yml
-git commit -am "Remove ConfigLint StepImplementer"
-git push
-```
 
 1. Update Rekor url in ConfigMap
 ```shell
