@@ -34,7 +34,7 @@ helm install -f values.yaml everything-pipeline .
 
 ```
 
-8. Fork the demo app
+8. Fork the application code repository demo application
 * Look up the Gitea URL
   * `oc get route gitea -o yaml | yq .status.ingress[].host`
 * Look up the Gitea username
@@ -58,7 +58,7 @@ helm install -f values.yaml everything-pipeline .
   * Enter the username and password from above
   * `cd ..`
 
-9. Fork the gitops repo for the demo application
+9. Fork the gitops repository for the demo application
 * Continue using the Gitea UI. Use the same URL / username / password from the previous step.
 * Navigate to the dashboard view (select "Dashboard" from the top menu).
 * Create a new repository for the demo app's gitops repo in the "platform" organization
@@ -77,7 +77,13 @@ helm install -f values.yaml everything-pipeline .
     * Enter the username and password from above if prompted
   * `cd ..`
 
-10. Update configmap and secret with new config for generate-evidence
+10. Export the ploigos platform configuration
+```shell
+oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq 'del(.metadata) | .metadata.name = "ploigos-platform-config-demo" | .metadata.namespace = "devsecops"' > ploigos-platform-config-demo-cm.yml
+oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq .data[] | base64 -d > config-secrets.yml
+```
+
+11. Update configmap and secret with new config for generate-evidence
 ```yaml
  generate-evidence:
   - name: Generate and Push Evidence
