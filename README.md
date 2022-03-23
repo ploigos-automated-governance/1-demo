@@ -1,3 +1,9 @@
+# Pre-Reqs
+
+Before you get started, make sure the following components are installed on your local machine
+
+- yq - https://github.com/mikefarah/yq
+
 # Setup Instructions
 
 1. Create a `CatalogSource` to import the RedHatGov operator catalog.
