@@ -15,9 +15,9 @@ Make sure the following components are installed on your local machine
 
 - yq - https://github.com/mikefarah/yq
 
-# Setup Instructions
+## Setup Instructions
 
-## First, Install the Ploigos Software Factory Platform
+### First, Install the Ploigos Software Factory Platform
 
 1. Create a `CatalogSource` to import the RedHatGov operator catalog.
 ```shell
@@ -100,7 +100,7 @@ oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quick
 oc expose service rekor-server -n sigstore
 ```
 
-## Second, Install the Ploigos Software Factory Pipeline & Demo Application
+### Second, Install the Ploigos Software Factory Pipeline & Demo Application
 
 9. Install the everything pipeline using helm
 ```shell
@@ -155,7 +155,7 @@ helm install -f values.yaml everything-pipeline .
     * Enter the username and password from above if prompted
   * `cd ..`
 
-## Thrid, Updated the Ploigos Software Factory Platform Configuration
+### Thrid, Updated the Ploigos Software Factory Platform Configuration
 
 12. Export the Ploigos platform configuration.
 ```shell
@@ -234,7 +234,7 @@ oc create secret generic ploigos-platform-config-secrets-demo --from-file config
 oc create -f everything-pipelinerun.yml 
 ```
 
-## Fourth, Expose the Pipeline as a Service, and Onboard the Demo Application
+### Fourth, Expose the Pipeline as a Service, and Onboard the Demo Application
 
 19. Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).
 ```shell
@@ -262,7 +262,7 @@ oc expose svc el-everything-pipeline
   * Pipelines (tab in the left navigation) -> Pipelines
 * The pipeline should finish successfully. This may take 15+ minutes.
 
-# Troubleshooting
+## Troubleshooting
 * To get the admin credentials for ArgoCD:
   * `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo`
   * `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo`
