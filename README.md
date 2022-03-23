@@ -212,20 +212,31 @@ oc create secret generic ploigos-platform-config-secrets-demo --from-file config
 oc create -f everything-pipelinerun.yml 
 ```
 
-19. Create an EventLister and TriggerTemplate (this sets up a Pipeline as a Service).
+19. Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).
 ```shell
 oc create -f el.yml
 oc create -f tt.yml
+oc expose svc el-everything-pipeline
 ```
 
-21. Create webhook in gitea for demo app
-* Settings -> Webhooks -> Add Webhook
-* Payload URL - Enter the Tekton EventListener webhook URL for your cluster.
-* Content Type: `application/json`
-* SSL Verification - `false`
+21. Create webhook in gitea for demo app.
+* In the the Gitea web open the *app source code* repo named reference-quarkus-mvn. (Not the -gitops repo.)
+* The URL should be something like https://gitea-devsecops.apps.your.cluster.com/platform/reference-quarkus-mvn
+* Settings (top right) -> Webhooks -> Add Webhook -> Gitea
+* Target URL - Enter the URL for the Route you just created for the EventListener. You can get it with `echo "http://$(oc get route el-everything-pipeline -o yaml | yq .status.ingress[].host)/"` 
+* Select "Add Webhook"
 
-20. Login to gitea and create a PR
-
+20. Test the webhook by editing the source code in the Gitea UI.
+* In the Gitea UI browse to the reference-quarkus-mvn project
+* Select "README.md"
+* Select "Edit File" (pencil icon to the top right)
+* Add some text to the file
+* Select "Create a new branch ..."
+* Name the branch `feature/demo`
+* Select "Propose file change"
+* In the OpenShift web UI you should see a running pipeline
+  * Pipelines (tab in the left navigation) -> Pipelines
+* The pipeline should finish successfully. This may take 15+ minutes.
 
 # Troubleshooting
 * To get the admin credentials for ArgoCD:

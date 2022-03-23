@@ -25,7 +25,7 @@ spec:
         name: cel
     name: gitea-pull-request
     template:
-      ref: ploigos-workflow-app1-service1
+      ref: everything-pipeline
   - bindings:
     - kind: ClusterTriggerBinding
       ref: gitea-push
@@ -45,4 +45,4 @@ spec:
         name: cel
     name: gitea-push
     template:
-      ref: ploigos-workflow-app1-service1
+      ref: everything-pipeline
