@@ -62,7 +62,6 @@ EOF
 ```shell
 oc create -f tekton-platform.yml```
 ```
-**WE STOPPED HERE IN THE ARO CLUSTER**
 
 6. Resize the Nexus PVC to 100 GiB.
 Use the OpenShift UI.
@@ -231,7 +230,7 @@ oc expose svc el-everything-pipeline
 * Select "README.md"
 * Select "Edit File" (pencil icon to the top right)
 * Add some text to the file
-* Select "Create a new branch ..."
+* Select "Create a new branch ..." (scroll down)
 * Name the branch `feature/demo`
 * Select "Propose file change"
 * In the OpenShift web UI you should see a running pipeline
