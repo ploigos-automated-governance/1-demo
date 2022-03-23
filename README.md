@@ -1,6 +1,17 @@
-# Pre-Reqs
+# Overview
 
-Before you get started, make sure the following components are installed on your local machine
+This repository provides the means to stand up and experiment with autoamted governance and piplines as a service using the Ploigos Everything workflow, OpenShift, OpenShift Pipeslines (Tekton), and OpenShift GitOps (ArgoCD).
+
+There are four (4) large tasks to setup and run the demo:
+
+1. First, Install the Ploigos Software Factory Platform
+2. Second, Install the Ploigos Software Factory Pipeline & Demo Application
+3. Thrid, Updated the Ploigos Software Factory Platform Configuration
+4. Fourth, Expose the Pipeline as a Service, and Onboard the Demo Application
+
+## Before You Start
+
+Make sure the following components are installed on your local machine
 
 - yq - https://github.com/mikefarah/yq
 
@@ -223,7 +234,7 @@ oc create secret generic ploigos-platform-config-secrets-demo --from-file config
 oc create -f everything-pipelinerun.yml 
 ```
 
-## Fourth, Exposre Pipeline as a Service an Onboard the Demo Applicaiton
+## Fourth, Expose the Pipeline as a Service, and Onboard the Demo Application
 
 19. Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).
 ```shell
