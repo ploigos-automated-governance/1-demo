@@ -1,0 +1,48 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: EventListener
+metadata:
+  name: everything-pipeline
+  namespace: devsecops
+spec:
+  serviceAccountName: el-ploigos-workflow-app1-service1
+  triggers:
+  - bindings:
+    - kind: ClusterTriggerBinding
+      ref: gitea-pullreq
+    interceptors:
+    - params:
+      - name: filter
+        value: |-
+          (header.match('X-Gitea-Event', 'pull_request')) && (
+            (body.action == 'opened') || (body.action == 'synchronized')
+          )
+      - name: overlays
+        value:
+        - expression: body.repository.name.replace('_','-') + '--' + body.pull_request.head.ref.replace('/','-').replace('_','-')
+          key: pipelinerun_name
+      ref:
+        kind: ClusterInterceptor
+        name: cel
+    name: gitea-pull-request
+    template:
+      ref: ploigos-workflow-app1-service1
+  - bindings:
+    - kind: ClusterTriggerBinding
+      ref: gitea-push
+    interceptors:
+    - params:
+      - name: filter
+        value: (header.match('X-Gitea-Event', 'push')) && (body.ref.startsWith('refs/heads/'))
+      - name: overlays
+        value:
+        - expression: body.ref.replace('refs/heads/', '')
+          key: branch_name
+        - expression: body.repository.name.replace('_','-') + '--' + body.ref.replace('refs/heads/',
+            '').replace('/','-').replace('_','-')
+          key: pipelinerun_name
+      ref:
+        kind: ClusterInterceptor
+        name: cel
+    name: gitea-push
+    template:
+      ref: ploigos-workflow-app1-service1

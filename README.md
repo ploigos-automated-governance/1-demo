@@ -207,12 +207,18 @@ oc create cm ploigos-platform-config-demo --from-file=config.yml -n devsecops
 oc create secret generic ploigos-platform-config-secrets-demo --from-file config-secrets.yml -n devsecops
 ```
 
-18. Test the pipeline with the new configuration
+18. Test the pipeline with the new configuration.
 ```shell
 oc create -f everything-pipelinerun.yml 
 ```
 
-19. Create webhook in gitea for demo app
+19. Create an EventLister and TriggerTemplate (this sets up a Pipeline as a Service).
+```shell
+oc create -f el.yml
+oc create -f tt.yml
+```
+
+21. Create webhook in gitea for demo app
 * Settings -> Webhooks -> Add Webhook
 * Payload URL - Enter the Tekton EventListener webhook URL for your cluster.
 * Content Type: `application/json`
