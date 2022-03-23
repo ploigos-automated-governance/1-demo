@@ -155,7 +155,7 @@ helm install -f values.yaml everything-pipeline .
     * Enter the username and password from above if prompted
   * `cd ..`
 
-### Thrid, Updated the Ploigos Software Factory Platform Configuration
+### Thrid, Update the Ploigos Software Factory Platform Configuration
 
 12. Export the Ploigos platform configuration.
 ```shell
