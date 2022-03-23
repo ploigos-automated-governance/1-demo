@@ -12,7 +12,7 @@ metadata:
 spec:
   params:
     - name: verbose
-      value: "false"
+      value: "true"
     - name: appRepoUrl
       value: http://gitea.devsecops.svc.cluster.local:3000/platform/reference-quarkus-mvn
     - name: appRepoRef
