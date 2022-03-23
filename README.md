@@ -121,6 +121,7 @@ helm install -f values.yaml everything-pipeline .
 * Create a new repository for the demo app's gitops repo in the "platform" organization
     * Organization (small tab on the right side of the screen) -> platform -> New Repository
     * Repository Name: `reference-quarkus-mvn-gitops`
+      * **NOTE:** you have to either a) use this exact name for the repo, or b) update the file located at `cicd/ploigos-software-factory-operator/ploigos-step-runner-config/config.yml` in your fork of the app source code repository with whatever name you want to use.
     * Select "Create Repository"
     * Select the clipboard icon to copy the HTTPS clone URL
     * Save that URL but don't use it yet
