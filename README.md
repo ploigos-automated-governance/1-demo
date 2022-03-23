@@ -6,6 +6,8 @@ Before you get started, make sure the following components are installed on your
 
 # Setup Instructions
 
+## First, Install the Ploigos Software Factory Platform
+
 1. Create a `CatalogSource` to import the RedHatGov operator catalog.
 ```shell
 oc apply -f - << EOF
@@ -87,6 +89,8 @@ oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quick
 oc expose service rekor-server -n sigstore
 ```
 
+## Second, Install the Ploigos Software Factory Pipeline & Demo Application
+
 9. Install the everything pipeline using helm
 ```shell
 git clone https://github.com/ploigos/ploigos-charts.git
@@ -139,6 +143,8 @@ helm install -f values.yaml everything-pipeline .
     * `git push`
     * Enter the username and password from above if prompted
   * `cd ..`
+
+## Thrid, Updated the Ploigos Software Factory Platform Configuration
 
 12. Export the Ploigos platform configuration.
 ```shell
@@ -216,6 +222,8 @@ oc create secret generic ploigos-platform-config-secrets-demo --from-file config
 ```shell
 oc create -f everything-pipelinerun.yml 
 ```
+
+## Fourth, Exposre Pipeline as a Service an Onboard the Demo Applicaiton
 
 19. Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).
 ```shell
