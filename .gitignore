@@ -1,3 +1,4 @@
 config-secrets.yml
 config.yml
-reference-quarkus-mvn
+reference-quarkus-mvn/
+reference-quarkus-mvn-gitops/
