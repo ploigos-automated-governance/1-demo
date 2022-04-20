@@ -264,6 +264,34 @@ oc expose svc el-everything-pipeline
 
 21. Edit the yaml for the app1-service Pipeline. Under tasks:, for the task named ci-push-container-image-to-repository, in the taskRef: field, change name to ci-push-container-image-to-repository.
 
+22.  Gitlab setup instructions
+* Look up gitlab root credentials
+	* The username is "root"
+	* For the password, look in secret gitlab-gitlab-initial-root-password in namespace gitlab-system
+* Look up gitlab URL
+	* oc get route -n gitlab-system
+	* It's the one that starts with "gitlab."
+* Browse to that url and login using the gitlab root credentials
+* New Project -> Create blank project
+* Project name: reference-quarkus-mvn
+* UNCHECK the checkbox for 'Initialize repository with a README'
+* Select the button at the bottom to create the repo
+* In Gitea, browse to the reference-quarkus-mvn project.
+	* Example url: https://gitea-devsecops.apps.n4vqtd9t.usgovvirginia.aroapp.azure.us/platform/reference-quarkus-mvn
+	* Copy the Clone URL (clipboard button, top right, between the text box that contains an https: url and the 'Download Repository' button)
+* In the terminal, 
+	* git clone <paste the url you just copied from gitea>
+	* cd reference-quarkus-mvn/
+	* git config http.sslVerify "false"
+* In GitLab, on the page for the new project
+	* Select the 'Clone' dropdown, Select the clipboard icon under 'Clone with HTTPS'
+* In the terminal,
+	* git remote set-url origin <paste the url you just copied from gitlab>
+	* git push
+	* Enter the gitlab root credentials
+* Do all of that again for the project called reference-quarkus-mvn-gitops
+
+
 
 ## Troubleshooting
 * To get the admin credentials for ArgoCD:
