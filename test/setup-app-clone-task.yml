@@ -1,0 +1,65 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  annotations:
+    meta.helm.sh/release-name: ploigos-workflow-tekton-cluster-resources
+    meta.helm.sh/release-namespace: devsecops
+    pipeline.tekton.dev/release: 79a0395
+    tekton.dev/displayName: git clone
+    tekton.dev/pipelines.minVersion: 0.12.1
+    tekton.dev/tags: git
+  generateName: manual-everything-setup-app-clone
+  uid: cb45f556-e6ee-4f0b-8042-3d4adb8c058d
+  generation: 1
+  namespace: devsecops
+  ownerReferences:
+    - apiVersion: tekton.dev/v1beta1
+      blockOwnerDeletion: true
+      controller: true
+      kind: PipelineRun
+      name: manual-everything-cqqq4
+      uid: 89fed891-5f4a-4184-a450-0d7b29a4c010
+  labels:
+    tekton.dev/memberOf: tasks
+    app.kubernetes.io/part-of: app1
+    app.kubernetes.io/instance: everything-pipeline
+    app.kubernetes.io/version: '0.2'
+    app.kubernetes.io/component: ploigos-workflow
+    tekton.dev/clusterTask: ploigos-git-clone
+    tekton.dev/pipeline: app1-service1
+    ploigos.dev/workflow: standard
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: ploigos-workflow-tekton-pipeline-everything-0.22.1-edge.0
+    tekton.dev/pipelineTask: setup-app-clone
+    app.kubernetes.io/name: service1
+    tekton.dev/pipelineRun: manual-everything-cqqq4
+spec:
+  params:
+    - name: verbose
+      value: 'true'
+    - name: image
+      value: 'gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.1'
+    - name: imagePullPolicy
+      value: IfNotPresent
+    - name: url
+      value: >-
+        http://gitea.devsecops.svc.cluster.local:3000/platform/reference-quarkus-mvn
+    - name: revision
+      value: main
+    - name: deleteExisting
+      value: 'true'
+    - name: sslVerify
+      value: 'true'
+    - name: refspec
+      value: '+refs/heads/main:main'
+  resources: {}
+  serviceAccountName: ploigos-workflow-app1-service1
+  taskRef:
+    kind: ClusterTask
+    name: ploigos-git-clone
+  timeout: 1h0m0s
+  workspaces:
+    - name: output
+      persistentVolumeClaim:
+        claimName: test-app
+
