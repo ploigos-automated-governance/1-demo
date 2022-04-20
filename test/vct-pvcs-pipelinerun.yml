@@ -1,7 +1,7 @@
 apiVersion: tekton.dev/v1beta1
 kind: PipelineRun
 metadata:
-  generateName: reference-quarkus-mvn--main-
+  generateName: manual-aspipeline-
   annotations:
     meta.helm.sh/release-name: everything-pipeline
     meta.helm.sh/release-namespace: devsecops
@@ -83,15 +83,25 @@ spec:
       value: 'ploigos/ploigos-tool-autogov:latest'
   pipelineRef:
     name: app1-service1
-  serviceAccountName: ploigos-workflow-app1-service1
+  serviceAccountName: pipeline
   timeout: 1h0m0s
   workspaces:
     - name: home
-      persistentVolumeClaim:
-        claimName: test-home
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
     - name: app
-      persistentVolumeClaim:
-        claimName: test-app
+      volumeClaimTemplate:
+        spec:
+          accessModes:
+            - ReadWriteOnce
+          resources:
+            requests:
+              storage: 10Gi
     - configMap:
         name: ploigos-platform-config-demo
       name: ploigos-platform-config

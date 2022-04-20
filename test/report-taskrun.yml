@@ -1,0 +1,66 @@
+apiVersion: tekton.dev/v1beta1
+kind: TaskRun
+metadata:
+  annotations:
+    meta.helm.sh/release-name: ploigos-workflow-tekton-cluster-resources
+    meta.helm.sh/release-namespace: devsecops
+    pipeline.tekton.dev/release: 79a0395
+    tekton.dev/displayName: Workflow Step Runner
+    tekton.dev/pipelines.minVersion: 0.14.0
+    tekton.dev/tags: ploigos,python
+  labels:
+    app.kubernetes.io/component: ploigos-workflow
+    app.kubernetes.io/instance: ploigos-workflow-tekton-cluster-resources
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: ploigos-workflow-tekton-cluster-resources
+    app.kubernetes.io/part-of: app1
+    helm.sh/chart: ploigos-workflow-tekton-cluster-resources-0.22.0
+    ploigos.dev/workflow: standard
+    tekton.dev/clusterTask: ploigos-step-runner
+    tekton.dev/memberOf: finally
+    tekton.dev/pipeline: app1-service1
+    tekton.dev/pipelineRun: manual-7mn5h
+    tekton.dev/pipelineTask: report
+    triggers.tekton.dev/eventlistener: everything-pipeline
+    triggers.tekton.dev/trigger: gitea-push
+    triggers.tekton.dev/triggers-eventid: 80e5c91e-c47b-467f-a869-2cc5dea1462b
+  generateName: manual-ci-create-container-image-
+  namespace: devsecops
+spec:
+  params:
+  - name: verbose
+    value: "true"
+  - name: image
+    value: ploigos/ploigos-tool-autogov:latest
+  - name: imagePullPolicy
+    value: IfNotPresent
+  - name: stepRunnerPackageName
+    value: ploigos-step-runner
+  - name: venvPath
+    value: /home/ploigos/venv-ploigos
+  - name: stepName
+    value: report
+  - name: stepRunnerConfigDir
+    value: /opt/platform-config/ /opt/platform-config-secrets/ cicd/ploigos-software-factory-operator/ploigos-step-runner-config/
+  - name: environment
+    value: PROD
+  resources: {}
+  serviceAccountName: ploigos-workflow-app1-service1
+  taskRef:
+    kind: ClusterTask
+    name: ploigos-step-runner
+  timeout: 1h0m0s
+  workspaces:
+  - name: home
+    persistentVolumeClaim:
+      claimName: test-home
+  - name: app
+    persistentVolumeClaim:
+      claimName: test-app
+  - configMap:
+      name: ploigos-platform-config-demo
+    name: ploigos-platform-config
+  - name: ploigos-platform-config-secrets
+    secret:
+      secretName: ploigos-platform-config-secrets-demo
+

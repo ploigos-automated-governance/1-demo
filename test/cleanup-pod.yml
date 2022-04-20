@@ -1,0 +1,328 @@
+kind: Pod
+apiVersion: v1
+metadata:
+  annotations:
+    openshift.io/scc: ploigos-workflow-runner-tekton
+    meta.helm.sh/release-namespace: devsecops
+    pipeline.tekton.dev/release: 79a0395
+    meta.helm.sh/release-name: ploigos-workflow-tekton-cluster-resources
+    tekton.dev/tags: 'ploigos,python'
+    tekton.dev/pipelines.minVersion: 0.14.0
+    tekton.dev/ready: READY
+    k8s.v1.cni.cncf.io/network-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.129.2.190"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    k8s.v1.cni.cncf.io/networks-status: |-
+      [{
+          "name": "openshift-sdn",
+          "interface": "eth0",
+          "ips": [
+              "10.129.2.190"
+          ],
+          "default": true,
+          "dns": {}
+      }]
+    tekton.dev/displayName: Workflow Step Runner with Elevated Capabilities
+  resourceVersion: '1598212'
+  generateName: manual-cleanup-
+  uid: 3f6eb479-cebf-40b1-8b14-3be7eb6d59b5
+  creationTimestamp: '2022-04-20T15:04:52Z'
+  namespace: devsecops
+  labels:
+    tekton.dev/memberOf: tasks
+    app.kubernetes.io/part-of: app1
+    app.kubernetes.io/instance: ploigos-workflow-tekton-cluster-resources
+    app.kubernetes.io/component: ploigos-workflow
+    tekton.dev/clusterTask: ploigos-step-runner-container-build-capabilities
+    tekton.dev/pipeline: app1-service1
+    ploigos.dev/workflow: standard
+    triggers.tekton.dev/eventlistener: everything-pipeline
+    app.kubernetes.io/managed-by: Helm
+    helm.sh/chart: ploigos-workflow-tekton-cluster-resources-0.22.0
+    tekton.dev/pipelineTask: ci-create-container-image
+    tekton.dev/taskRun: manual-7mn5h-ci-create-container-image-ddbkf
+    app.kubernetes.io/name: ploigos-workflow-tekton-cluster-resources
+    tekton.dev/pipelineRun: manual-7mn5h
+    triggers.tekton.dev/trigger: gitea-push
+    triggers.tekton.dev/triggers-eventid: 80e5c91e-c47b-467f-a869-2cc5dea1462b
+spec:
+  restartPolicy: Never
+  activeDeadlineSeconds: 5400
+  serviceAccountName: ploigos-workflow-app1-service1
+  imagePullSecrets:
+    - name: ploigos-workflow-app1-service1-dockercfg-rp2j5
+  priority: 0
+  schedulerName: default-scheduler
+  enableServiceLinks: true
+  terminationGracePeriodSeconds: 30
+  preemptionPolicy: PreemptLowerPriority
+  nodeName: aro-cluster-nz7g5-worker-usgovvirginia2-7wgvt
+  securityContext:
+    seLinuxOptions:
+      level: 's0:c26,c5'
+    fsGroup: 1000660000
+  containers:
+    - resources: {}
+      terminationMessagePath: /tekton/termination
+      name: step-workflow-step
+      command:
+        - rm -rf 
+      env:
+        - name: HOME
+          value: /home/ploigos
+        - name: VERBOSE
+          value: 'true'
+        - name: PAUSE_FOR_DEBUG_BEFORE_STEP_RUN
+          value: 'false'
+        - name: VENV_PATH
+          value: /home/ploigos/venv-ploigos
+        - name: PSR_CONFIG_ARG
+          value: >-
+            /opt/platform-config/ /opt/platform-config-secrets/
+            cicd/ploigos-software-factory-operator/ploigos-step-runner-config/
+        - name: PSR_STEP_NAME
+          value: create-container-image
+        - name: PSR_ENVIRONMENT
+      securityContext:
+        capabilities:
+          add:
+            - SETGID
+            - SETUID
+          drop:
+            - KILL
+            - MKNOD
+        runAsUser: 1000660000
+      imagePullPolicy: IfNotPresent
+      volumeMounts:
+        - name: ws-vk2gs
+          mountPath: /home/ploigos
+        - name: ws-9l69f
+          mountPath: /workspace/app
+        - name: ws-rmbjc
+          mountPath: /opt/platform-config
+        - name: ws-m562t
+          mountPath: /opt/platform-config-secrets
+        - name: tekton-internal-scripts
+          readOnly: true
+          mountPath: /tekton/scripts
+        - name: tekton-internal-tools
+          mountPath: /tekton/tools
+        - name: tekton-internal-downward
+          mountPath: /tekton/downward
+        - name: tekton-creds-init-home-0
+          mountPath: /tekton/creds
+        - name: tekton-internal-workspace
+          mountPath: /workspace
+        - name: tekton-internal-home
+          mountPath: /tekton/home
+        - name: tekton-internal-results
+          mountPath: /tekton/results
+        - name: tekton-internal-steps
+          mountPath: /tekton/steps
+        - name: tekton-internal-secret-volume-ploigos-workflow-app1-servi-5tw6r
+          mountPath: /tekton/creds-secrets/ploigos-workflow-app1-service1-dockercfg-rp2j5
+        - name: kube-api-access-njk4g
+          readOnly: true
+          mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+      terminationMessagePolicy: File
+      image: 'ploigos/ploigos-tool-containers:latest'
+      workingDir: /workspace/app
+      args:
+        - '-wait_file'
+        - /tekton/downward/ready
+        - '-wait_file_content'
+        - '-post_file'
+        - /tekton/tools/0
+        - '-termination_path'
+        - /tekton/termination
+        - '-step_metadata_dir'
+        - /tekton/steps/step-workflow-step
+        - '-step_metadata_dir_link'
+        - /tekton/steps/0
+        - '-docker-cfg=ploigos-workflow-app1-service1-dockercfg-rp2j5'
+        - '-entrypoint'
+        - /tekton/scripts/script-0-t7vz6
+        - '--'
+  serviceAccount: ploigos-workflow-app1-service1
+  volumes:
+    - name: tekton-internal-workspace
+      emptyDir: {}
+    - name: tekton-internal-home
+      emptyDir: {}
+    - name: tekton-internal-results
+      emptyDir: {}
+    - name: tekton-internal-steps
+      emptyDir: {}
+    - name: tekton-internal-secret-volume-ploigos-workflow-app1-servi-5tw6r
+      secret:
+        secretName: ploigos-workflow-app1-service1-dockercfg-rp2j5
+        defaultMode: 420
+    - name: tekton-internal-scripts
+      emptyDir: {}
+    - name: tekton-internal-tools
+      emptyDir: {}
+    - name: tekton-internal-downward
+      downwardAPI:
+        items:
+          - path: ready
+            fieldRef:
+              apiVersion: v1
+              fieldPath: 'metadata.annotations[''tekton.dev/ready'']'
+        defaultMode: 420
+    - name: tekton-creds-init-home-0
+      emptyDir:
+        medium: Memory
+    - name: ws-vk2gs
+      persistentVolumeClaim:
+        claimName: test-home
+    - name: ws-9l69f
+      persistentVolumeClaim:
+        claimName: test-app
+    - name: ws-rmbjc
+      configMap:
+        name: ploigos-platform-config-demo
+        defaultMode: 420
+    - name: ws-m562t
+      secret:
+        secretName: ploigos-platform-config-secrets-demo
+        defaultMode: 420
+    - name: kube-api-access-njk4g
+      projected:
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3607
+              path: token
+          - configMap:
+              name: kube-root-ca.crt
+              items:
+                - key: ca.crt
+                  path: ca.crt
+          - downwardAPI:
+              items:
+                - path: namespace
+                  fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+          - configMap:
+              name: openshift-service-ca.crt
+              items:
+                - key: service-ca.crt
+                  path: service-ca.crt
+        defaultMode: 420
+  dnsPolicy: ClusterFirst
+  tolerations:
+    - key: node.kubernetes.io/not-ready
+      operator: Exists
+      effect: NoExecute
+      tolerationSeconds: 300
+    - key: node.kubernetes.io/unreachable
+      operator: Exists
+      effect: NoExecute
+      tolerationSeconds: 300
+  containerStatuses:
+    - restartCount: 0
+      started: false
+      ready: false
+      name: step-workflow-step
+      state:
+        terminated:
+          exitCode: 200
+          reason: Error
+          message: '[{"key":"StartedAt","value":"2022-04-20T15:05:00.943Z","type":3}]'
+          startedAt: '2022-04-20T15:04:58Z'
+          finishedAt: '2022-04-20T15:05:22Z'
+          containerID: >-
+            cri-o://8e316ff07b2ca8fbb39cca71887ae88e12c3699ecd65aa2e791fcfa0b2a45bd4
+      imageID: >-
+        quay.io/ploigos/ploigos-tool-containers@sha256:056138ae7200b8f4933937338d7a725ff830839a30d1a1adb37f003b805b306a
+      image: 'quay.io/ploigos/ploigos-tool-containers:latest'
+      lastState: {}
+      containerID: 'cri-o://8e316ff07b2ca8fbb39cca71887ae88e12c3699ecd65aa2e791fcfa0b2a45bd4'
+  qosClass: BestEffort
+  podIPs:
+    - ip: 10.129.2.190
+  podIP: 10.129.2.190
+  hostIP: 10.0.1.5
+  startTime: '2022-04-20T15:04:52Z'
+  initContainerStatuses:
+    - name: place-tools
+      state:
+        terminated:
+          exitCode: 0
+          reason: Completed
+          startedAt: '2022-04-20T15:04:55Z'
+          finishedAt: '2022-04-20T15:04:55Z'
+          containerID: >-
+            cri-o://d977e92b91ca02f4a5fba8ce6690c189791d53d78f2caab9491226386866f8ae
+      lastState: {}
+      ready: true
+      restartCount: 0
+      image: >-
+        registry.redhat.io/openshift-pipelines/pipelines-entrypoint-rhel8@sha256:a9aee487128adef9d2a966fe981a3e2c3f6b4ba8ac50d837d8869758fa0ac6c6
+      imageID: >-
+        registry.redhat.io/openshift-pipelines/pipelines-entrypoint-rhel8@sha256:80da0852474b79ec962bb8ecf2c45ef2fc6b2777605ae6e946ba3bf1a04b01c7
+      containerID: 'cri-o://d977e92b91ca02f4a5fba8ce6690c189791d53d78f2caab9491226386866f8ae'
+    - name: place-scripts
+      state:
+        terminated:
+          exitCode: 0
+          reason: Completed
+          startedAt: '2022-04-20T15:04:56Z'
+          finishedAt: '2022-04-20T15:04:56Z'
+          containerID: >-
+            cri-o://e7f97ca88f9d73004cd6b4ea72c81a75e47bd3de6fed1acbe9a7b4a932ec53bc
+      lastState: {}
+      ready: true
+      restartCount: 0
+      image: >-
+        registry.access.redhat.com/ubi8/ubi-minimal@sha256:54ef2173bba7384dc7609e8affbae1c36f8a3ec137cacc0866116d65dd4b9afe
+      imageID: >-
+        registry.access.redhat.com/ubi8/ubi-minimal@sha256:27a3683c44e97432453ad25bf4a64d040e2c82cfe0e0b36ebf1d74d68e22b1c6
+      containerID: 'cri-o://e7f97ca88f9d73004cd6b4ea72c81a75e47bd3de6fed1acbe9a7b4a932ec53bc'
+    - name: working-dir-initializer
+      state:
+        terminated:
+          exitCode: 0
+          reason: Completed
+          startedAt: '2022-04-20T15:04:57Z'
+          finishedAt: '2022-04-20T15:04:57Z'
+          containerID: >-
+            cri-o://024ee1307a3f53aefb0f1a375203ef0039e470ba5319ba0f91ed7d47e5eecfeb
+      lastState: {}
+      ready: true
+      restartCount: 0
+      image: >-
+        registry.access.redhat.com/ubi8/ubi-minimal@sha256:54ef2173bba7384dc7609e8affbae1c36f8a3ec137cacc0866116d65dd4b9afe
+      imageID: >-
+        registry.access.redhat.com/ubi8/ubi-minimal@sha256:27a3683c44e97432453ad25bf4a64d040e2c82cfe0e0b36ebf1d74d68e22b1c6
+      containerID: 'cri-o://024ee1307a3f53aefb0f1a375203ef0039e470ba5319ba0f91ed7d47e5eecfeb'
+  conditions:
+    - type: Initialized
+      status: 'True'
+      lastProbeTime: null
+      lastTransitionTime: '2022-04-20T15:04:58Z'
+    - type: Ready
+      status: 'False'
+      lastProbeTime: null
+      lastTransitionTime: '2022-04-20T15:05:23Z'
+      reason: ContainersNotReady
+      message: 'containers with unready status: [step-workflow-step]'
+    - type: ContainersReady
+      status: 'False'
+      lastProbeTime: null
+      lastTransitionTime: '2022-04-20T15:05:23Z'
+      reason: ContainersNotReady
+      message: 'containers with unready status: [step-workflow-step]'
+    - type: PodScheduled
+      status: 'True'
+      lastProbeTime: null
+      lastTransitionTime: '2022-04-20T15:04:52Z'
+  phase: Failed
+
