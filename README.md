@@ -262,6 +262,9 @@ oc expose svc el-everything-pipeline
   * Pipelines (tab in the left navigation) -> Pipelines
 * The pipeline should finish successfully. This may take 15+ minutes.
 
+21. Edit the yaml for the app1-service Pipeline. Under tasks:, for the task named ci-push-container-image-to-repository, in the taskRef: field, change name to ci-push-container-image-to-repository.
+
+
 ## Troubleshooting
 * To get the admin credentials for ArgoCD:
   * `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo`
