@@ -1,95 +1,72 @@
 apiVersion: tekton.dev/v1beta1
-kind: PipelineRun
+kind: TaskRun
 metadata:
-  generateName: manual-ci-push-container-image-to-registry-
   annotations:
-    meta.helm.sh/release-name: everything-pipeline
+    meta.helm.sh/release-name: ploigos-workflow-tekton-cluster-resources
     meta.helm.sh/release-namespace: devsecops
+    pipeline.tekton.dev/release: 79a0395
+    tekton.dev/displayName: Workflow Step Runner
+    tekton.dev/pipelines.minVersion: 0.14.0
+    tekton.dev/tags: 'ploigos,python'
+  resourceVersion: '1660587'
+  generateName: retry-push-container-capabilities-task-
   namespace: devsecops
+  ownerReferences:
+    - apiVersion: tekton.dev/v1beta1
+      blockOwnerDeletion: true
+      controller: true
+      kind: PipelineRun
+      name: manual-rrc9g
+      uid: 5afac04e-c6b1-4291-9a7c-480a37f85e6b
   labels:
+    tekton.dev/memberOf: tasks
     app.kubernetes.io/part-of: app1
-    app.kubernetes.io/instance: everything-pipeline
+    app.kubernetes.io/instance: ploigos-workflow-tekton-cluster-resources
     app.kubernetes.io/component: ploigos-workflow
+    tekton.dev/clusterTask: ploigos-step-runner
     tekton.dev/pipeline: app1-service1
     ploigos.dev/workflow: standard
     triggers.tekton.dev/eventlistener: everything-pipeline
     app.kubernetes.io/managed-by: Helm
-    helm.sh/chart: ploigos-workflow-tekton-pipeline-everything-0.22.1-edge.0
-    app.kubernetes.io/name: service1
+    helm.sh/chart: ploigos-workflow-tekton-cluster-resources-0.22.0
+    tekton.dev/pipelineTask: ci-push-container-image-to-repository
+    app.kubernetes.io/name: ploigos-workflow-tekton-cluster-resources
+    tekton.dev/pipelineRun: manual-rrc9g
     triggers.tekton.dev/trigger: gitea-push
     triggers.tekton.dev/triggers-eventid: 80e5c91e-c47b-467f-a869-2cc5dea1462b
 spec:
   params:
+    - name: pauseForDebugBeforeStepRun
+      value: 'true'
     - name: verbose
       value: 'true'
-    - name: appRepoUrl
-      value: >-
-        https://gitea-devsecops.apps.n4vqtd9t.usgovvirginia.aroapp.azure.us/platform/reference-quarkus-mvn
-    - name: appRepoRef
-      value: main
+    - name: image
+      value: 'ploigos/ploigos-tool-containers:latest'
+    - name: imagePullPolicy
+      value: IfNotPresent
+    - name: stepRunnerPackageName
+      value: ploigos-step-runner
+    - name: venvPath
+      value: /home/ploigos/venv-ploigos
+    - name: stepName
+      value: push-container-image
     - name: stepRunnerConfigDir
       value: >-
         /opt/platform-config/ /opt/platform-config-secrets/
         cicd/ploigos-software-factory-operator/ploigos-step-runner-config/
-    - name: pgpKeysSecretName
-      value: ploigos-gpg-key
-    - name: stepRunnerPackageName
-      value: ploigos-step-runner
-    - name: stepRunnerUpdateLibrary
-      value: 'false'
-    - name: stepRunnerLibIndexUrl
-      value: 'https://pypi.org/simple/'
-    - name: stepRunnerLibExtraIndexUrl
-      value: 'https://pypi.org/simple/'
-    - name: envNameDev
-      value: DEV
-    - name: envNameTest
-      value: TEST
-    - name: envNameProd
-      value: PROD
-    - name: ciOnlyGitRefPatterns
-      value: ^$
-    - name: devGitRefPatterns
-      value: ^feature/.+$|^PR-.+$
-    - name: releaseGitRefPatterns
-      value: ^main$
-    - name: workflowWorkerImageDefault
-      value: 'quay.io/ploigos/ploigos-tool-maven:latest'
-    - name: workflowWorkerImageSourceClone
-      value: 'gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.1'
-    - name: workflowWorkerImageUnitTest
-      value: 'quay.io/ploigos/ploigos-tool-maven:latest'
-    - name: workflowWorkerImagePackage
-      value: 'quay.io/ploigos/ploigos-tool-maven:latest'
-    - name: workflowWorkerImageStaticCodeAnalysis
-      value: 'quay.io/ploigos/ploigos-tool-sonar:latest'
-    - name: workflowWorkerImagePushArtifacts
-      value: 'quay.io/ploigos/ploigos-tool-maven:latest'
-    - name: workflowWorkerImageContainerOperations
-      value: 'ploigos/ploigos-tool-containers:latest'
-    - name: workflowWorkerImageContainerImageStaticComplianceScan
-      value: 'ploigos/ploigos-tool-openscap:latest'
-    - name: workflowWorkerImageContainerImageStaticVulnerabilityScan
-      value: 'ploigos/ploigos-tool-openscap:latest'
-    - name: workflowWorkerImageDeploy
-      value: 'ploigos/ploigos-tool-argocd:latest'
-    - name: workflowWorkerImageValidateEnvironmentConfiguration
-      value: 'ploigos/ploigos-tool-config-lint:latest'
-    - name: workflowWorkerImageUAT
-      value: 'quay.io/ploigos/ploigos-tool-maven:latest'
-    - name: workflowWorkerImageAutoGov
-      value: 'ploigos/ploigos-tool-autogov:latest'
-  pipelineRef:
-    name: app1-service1
-  serviceAccountName: ploigos-workflow-app1-service1
+  resources: {}
+  serviceAccountName: pipeline
+  taskRef:
+    kind: ClusterTask
+    name: ploigos-step-runner-container-build-capabilities
   timeout: 1h0m0s
   workspaces:
     - name: home
       persistentVolumeClaim:
-        claimName: test-home
+        claimName: pvc-383796a817
     - name: app
       persistentVolumeClaim:
-        claimName: test-app
+        claimName: pvc-295722de3d
     - configMap:
         name: ploigos-platform-config-demo
       name: ploigos-platform-config

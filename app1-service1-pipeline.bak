@@ -1,0 +1,1502 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  annotations:
+    meta.helm.sh/release-name: everything-pipeline
+    meta.helm.sh/release-namespace: devsecops
+  resourceVersion: '134286'
+  name: app1-service1
+  uid: e2da626b-b813-4294-b006-ddbe335f3ace
+  creationTimestamp: '2022-04-19T19:48:19Z'
+  generation: 1
+  managedFields:
+    - apiVersion: tekton.dev/v1beta1
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:metadata':
+          'f:annotations':
+            .: {}
+            'f:meta.helm.sh/release-name': {}
+            'f:meta.helm.sh/release-namespace': {}
+          'f:labels':
+            .: {}
+            'f:app.kubernetes.io/component': {}
+            'f:app.kubernetes.io/instance': {}
+            'f:app.kubernetes.io/managed-by': {}
+            'f:app.kubernetes.io/name': {}
+            'f:app.kubernetes.io/part-of': {}
+            'f:helm.sh/chart': {}
+            'f:ploigos.dev/workflow': {}
+        'f:spec':
+          .: {}
+          'f:finally': {}
+          'f:params': {}
+          'f:tasks': {}
+          'f:workspaces': {}
+      manager: helm
+      operation: Update
+      time: '2022-04-19T19:48:19Z'
+  namespace: devsecops
+  labels:
+    app.kubernetes.io/component: ploigos-workflow
+    app.kubernetes.io/instance: everything-pipeline
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/name: service1
+    app.kubernetes.io/part-of: app1
+    helm.sh/chart: ploigos-workflow-tekton-pipeline-everything-0.22.1-edge.0
+    ploigos.dev/workflow: standard
+spec:
+  finally:
+    - name: report
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageAutoGov)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: report
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameProd)
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+  params:
+    - default: 'false'
+      description: Log any *sh commands used during execution.
+      name: verbose
+      type: string
+    - description: |
+        URL to the application repository to run the pipeline for.
+      name: appRepoUrl
+      type: string
+    - description: >
+        Git reference (tag, branch) of the application repository to run the
+        pipeline for.
+      name: appRepoRef
+      type: string
+    - default: 'true'
+      description: >
+        Passed to git-clone ClusterTask.
+
+        Defines if http.sslVerify should be set to true or false in the global
+        git config.
+      name: appCloneSSLVerify
+      type: string
+    - default: ''
+      description: |
+        Path to the Step Runner configuration to pass to the
+        Workflow Step Runner when running workflow steps.
+      name: stepRunnerConfigDir
+      type: string
+    - description: >
+        Name of the Kubernetes Secret containing the PGP private keys to import
+        for use by SOPS
+
+        to decrypt encrypted Step Runner config.
+      name: pgpKeysSecretName
+      type: string
+    - default: DEV
+      description: >
+        Name of the "Development" environment used in the Step Runner
+        configuration
+
+        files and to pass to the Workflow Step Runner when running a step
+        targeted to
+
+        the "Development" environment.
+      name: envNameDev
+      type: string
+    - default: TEST
+      description: >
+        Name of the "Test" environment used in the Step Runner configuration
+
+        files and to pass to the Workflow Step Runner when running a step
+        targeted to
+
+        the "Test" environment.
+      name: envNameTest
+      type: string
+    - default: PROD
+      description: >
+        Name of the "Production" environment used in the Step Runner
+        configuration
+
+        files and to pass to the Workflow Step Runner when running a step
+        targeted to
+
+        the "Production" environment.
+      name: envNameProd
+      type: string
+    - default: ^$
+      description: |
+        Regex pattern for git references that should only go through the
+        Continuous Integration (CI) workflow.
+      name: ciOnlyGitRefPatterns
+      type: string
+    - default: ^feature/.+$|^PR-.+$
+      description: |
+        Regex pattern for git references that should go through the
+        Continuous Integration (CI) workflow and then the deployment to
+        "Development" environment(s) (IE: "DEV" environment) workflow.
+      name: devGitRefPatterns
+      type: string
+    - default: ^main$
+      description: >
+        Regex pattern for git references that should go through the
+
+        Continuous Integration (CI) workflow and then the deployment to
+
+        "Release" environment(s) (IE: "TEST" and then "PROD" environments)
+        workflow.
+      name: releaseGitRefPatterns
+      type: string
+    - default: ploigos-step-runner
+      description: |
+        Name of the python package to use as the Workflow Step Runner.
+      name: stepRunnerPackageName
+      type: string
+    - default: 'false'
+      description: >
+        If 'true', then pull the Workflow Step Runner library source code and
+        build it.
+
+        If 'false', use the version of the Workflow Step Runner library that is
+        pre-installed
+
+        in the CI worker images.
+
+
+        If 'false' then the following parameters are ignored:
+          - 'stepRunnerLibSourceUrl'
+          - 'stepRunnerLibIndexUrl'
+          - 'stepRunnerLibExtraIndexUrl'
+          - 'stepRunnerLibVersion'
+      name: stepRunnerUpdateLibrary
+      type: string
+    - default: 'https://pypi.org/simple/'
+      description: >
+        If 'stepRunnerUpdateLibrary' is true and 'stepRunnerLibSourceUrl' is not
+        supplied then this
+
+        will be passed to pip as '--index-url' for installing the Workflow Step
+        Runner library
+
+        and its dependencies.
+
+
+        NOTE
+
+        ----
+
+        PIP is indeterminate whether it will pull packages from '--index-url' or
+
+        '--extra-index-url', therefore be sure to specify 'stepRunnerLibVersion'
+
+        if trying to pull a specific version from a specific index.
+
+
+        SEE
+
+        ---
+
+        - https://pip.pypa.io/en/stable/reference/pip_install/#id48
+      name: stepRunnerLibIndexUrl
+      type: string
+    - default: 'https://pypi.org/simple/'
+      description: >
+        If 'stepRunnerUpdateLibrary' is true and 'stepRunnerLibSourceUrl' is not
+        supplied then this
+
+        will be passed to pip as '--extra-index-url' for installing the Workflow
+        Step Runner library
+
+        and its dependencies.
+
+
+        NOTE
+
+        ----
+
+        PIP is indeterminate whether it will pull packages from '--index-url' or
+
+        '--extra-index-url', therefore be sure to specify 'stepRunnerLibVersion'
+
+        if trying to pull a specific version from a specific index.
+
+
+        SEE
+
+        ---
+
+        - https://pip.pypa.io/en/stable/reference/pip_install/#id48
+      name: stepRunnerLibExtraIndexUrl
+      type: string
+    - default: ''
+      description: >
+        If 'stepRunnerUpdateLibrary' is true and 'stepRunnerLibSourceUrl' is not
+        supplied then this
+
+        will be passed to pip as as the version of the Workflow Step Runner
+        library to install.
+
+
+        NOTE
+
+        ----
+
+        If not given pip will install the latest from either
+        'stepRunnerLibIndexUrl' or
+
+        'stepRunnerLibExtraIndexUrl' indeterminately.
+      name: stepRunnerLibVersion
+      type: string
+    - default: ''
+      description: >
+        If none empty value given and 'stepRunnerUpdateLibrary' is true this
+        will be used as the source
+
+        location to install the Workflow Step Runner library from rather than
+        from a PEP 503 compliant
+
+        repository.
+
+
+        If given then the following parameters are ignored:
+          - 'stepRunnerLibIndexUrl'
+          - 'stepRunnerLibExtraIndexUrl'
+          - 'stepRunnerLibVersion'
+
+        EXAMPLES
+
+        --------
+
+        git+https://github.com/ploigos/ploigos-step-runner.git@feature/NAPSSPO-1018
+
+        installs from the public 'ploigos' fork from the 'feature/NAPSSPO-1018'
+        branch.
+
+
+        git+https://gitea.internal.example.xyz/tools/ploigos-step-runner.git@main
+
+        installs from an internal fork of the step runner library from the
+        'main' branch.
+      name: stepRunnerLibSourceUrl
+      type: string
+    - default: IfNotPresent
+      description: |
+        Policy for pulling new versions of the imageTag for the CI worker images
+        when running this pipeline.
+      name: workflowWorkersImagePullPolicy
+      type: string
+    - default: 'ploigos/ploigos-base:latest'
+      description: |
+        Container image to use when creating a workflow worker
+        to run pipeline steps when no other specific container image has been
+        specified for that step.
+      name: workflowWorkerImageDefault
+      type: string
+    - default: 'gcr.io/tekton-releases/github.com/tektoncd/pipeline/cmd/git-init:v0.12.1'
+      description: |
+        Container image to use when creating a workflow worker
+        to run pipeline steps when performing source clone step(s).
+      name: workflowWorkerImageSourceClone
+      type: string
+    - description: |
+        Container image to use when creating a workflow worker
+        to run pipeline steps when performing unit test step(s).
+      name: workflowWorkerImageUnitTest
+      type: string
+    - description: |
+        Container image to use when creating a workflow worker
+        to run pipeline steps when performing package application step(s).
+      name: workflowWorkerImagePackage
+      type: string
+    - default: 'ploigos/ploigos-tool-sonar:latest'
+      description: |
+        Container image to use when creating a workflow worker
+        to run pipeline steps when performing static code analysis step(s).
+      name: workflowWorkerImageStaticCodeAnalysis
+      type: string
+    - description: >
+        Container image to use when creating a workflow worker
+
+        to run pipeline steps when performing push push packaged artifacts
+        step(s).
+      name: workflowWorkerImagePushArtifacts
+      type: string
+    - default: 'ploigos/ploigos-tool-containers:latest'
+      description: >
+        Container image to use when creating a workflow worker
+
+        to run pipeline steps when performing container operations
+        (build/push/etc) step(s).
+      name: workflowWorkerImageContainerOperations
+      type: string
+    - default: 'ploigos/ploigos-tool-openscap:latest'
+      description: >
+        Container image to use when creating a workflow worker
+
+        to run pipeline steps when performing container image static compliance
+        scan step(s).
+      name: workflowWorkerImageContainerImageStaticComplianceScan
+      type: string
+    - default: 'ploigos/ploigos-tool-openscap:latest'
+      description: >
+        Container image to use when creating a workflow worker to run pipeline
+        steps
+
+        when performing container image static vulnerability scan step(s).
+      name: workflowWorkerImageContainerImageStaticVulnerabilityScan
+      type: string
+    - default: 'ploigos/ploigos-tool-argocd:latest'
+      description: |
+        Container image to use when creating a workflow worker
+        to run pipeline steps when performing deploy step(s).
+      name: workflowWorkerImageDeploy
+      type: string
+    - default: 'ploigos/ploigos-tool-config-lint:latest'
+      description: >
+        Container image to use when creating a workflow worker
+
+        to run pipeline steps when performing validate environment configuration
+        step(s).
+      name: workflowWorkerImageValidateEnvironmentConfiguration
+      type: string
+    - description: >
+        Container image to use when creating a workflow worker
+
+        to run pipeline steps when performing user acceptance tests (UAT)
+        step(s).
+      name: workflowWorkerImageUAT
+      type: string
+    - description: |
+        Container image to use when creating a workflow worker
+        to run pipeline steps when performing auto governance steps.
+      name: workflowWorkerImageAutoGov
+      type: string
+  tasks:
+    - name: setup-stage-gate
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: input
+          value: $(params.appRepoRef)
+        - name: pattern
+          value: >-
+            $(params.ciOnlyGitRefPatterns)|$(params.devGitRefPatterns)|$(params.releaseGitRefPatterns)
+      taskRef:
+        kind: ClusterTask
+        name: pattern-matcher
+    - name: setup-app-clone
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageSourceClone)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: url
+          value: $(params.appRepoUrl)
+        - name: revision
+          value: $(params.appRepoRef)
+        - name: deleteExisting
+          value: 'true'
+        - name: sslVerify
+          value: $(params.appCloneSSLVerify)
+        - name: refspec
+          value: '+refs/heads/$(params.appRepoRef):$(params.appRepoRef)'
+      runAfter:
+        - setup-stage-gate
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-git-clone
+      when:
+        - input: $(tasks.setup-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: output
+          workspace: app
+    - name: setup-workflow-step-runner
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageDefault)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: stepRunnerUpdateLibrary
+          value: $(params.stepRunnerUpdateLibrary)
+        - name: stepRunnerLibSourceUrl
+          value: $(params.stepRunnerLibSourceUrl)
+        - name: stepRunnerLibIndexUrl
+          value: $(params.stepRunnerLibIndexUrl)
+        - name: stepRunnerLibExtraIndexUrl
+          value: $(params.stepRunnerLibExtraIndexUrl)
+        - name: stepRunnerLibVersion
+          value: $(params.stepRunnerLibVersion)
+      runAfter:
+        - setup-stage-gate
+        - setup-app-clone
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-setup-workflow-step-runner
+      when:
+        - input: $(tasks.setup-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+    - name: setup-pgp-keys
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageDefault)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: pgpKeysSecretName
+          value: $(params.pgpKeysSecretName)
+      runAfter:
+        - setup-stage-gate
+        - setup-workflow-step-runner
+      taskRef:
+        kind: ClusterTask
+        name: import-pgp-keys
+      when:
+        - input: $(tasks.setup-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+    - name: ci-stage-gate
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: input
+          value: $(params.appRepoRef)
+        - name: pattern
+          value: >-
+            $(params.ciOnlyGitRefPatterns)|$(params.devGitRefPatterns)|$(params.releaseGitRefPatterns)
+      runAfter:
+        - setup-app-clone
+        - setup-workflow-step-runner
+        - setup-pgp-keys
+      taskRef:
+        kind: ClusterTask
+        name: pattern-matcher
+    - name: ci-generate-metadata
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageDefault)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: generate-metadata
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-stage-gate
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-tag-source-code
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageDefault)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: tag-source
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-generate-metadata
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-run-unit-tests
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageUnitTest)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: unit-test
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-tag-source-code
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-package-application
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImagePackage)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: package
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-run-unit-tests
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-static-code-analysis
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageStaticCodeAnalysis)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: static-code-analysis
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-package-application
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-push-application-to-repository
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImagePushArtifacts)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: push-artifacts
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-static-code-analysis
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-create-container-image
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageContainerOperations)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: create-container-image
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-push-application-to-repository
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner-container-build-capabilities
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-static-image-scan-compliance
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageContainerImageStaticComplianceScan)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: container-image-static-compliance-scan
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-create-container-image
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner-container-build-capabilities
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-static-image-scan-vulnerability
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageContainerImageStaticVulnerabilityScan)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: container-image-static-vulnerability-scan
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-create-container-image
+        - ci-static-image-scan-compliance
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner-container-build-capabilities
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-push-container-image-to-repository
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageContainerOperations)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: push-container-image
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-static-image-scan-vulnerability
+        - ci-static-image-scan-compliance
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-sign-container-image
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageContainerOperations)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: sign-container-image
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-push-container-image-to-repository
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.ci-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: ci-generate-evidence
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageAutoGov)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: generate-evidence
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+      runAfter:
+        - ci-sign-container-image
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: dev-stage-gate
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: input
+          value: $(params.appRepoRef)
+        - name: pattern
+          value: $(params.devGitRefPatterns)
+      runAfter:
+        - ci-generate-evidence
+      taskRef:
+        kind: ClusterTask
+        name: pattern-matcher
+    - name: dev-audit-attestation
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageAutoGov)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: audit-attestation
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameDev)
+      runAfter:
+        - dev-stage-gate
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.dev-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: dev-deploy-or-update-environment
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageDeploy)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: deploy
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameDev)
+      runAfter:
+        - dev-audit-attestation
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.dev-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: dev-validate-environment-configuration
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageValidateEnvironmentConfiguration)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: validate-environment-configuration
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameDev)
+      runAfter:
+        - dev-deploy-or-update-environment
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.dev-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: dev-run-user-acceptance-tests
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageUAT)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: uat
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameDev)
+      runAfter:
+        - dev-validate-environment-configuration
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.dev-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: dev-generate-evidence
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageAutoGov)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: generate-evidence
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameDev)
+      runAfter:
+        - dev-run-user-acceptance-tests
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.dev-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: test-stage-gate
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: input
+          value: $(params.appRepoRef)
+        - name: pattern
+          value: $(params.releaseGitRefPatterns)
+      runAfter:
+        - ci-generate-evidence
+      taskRef:
+        kind: ClusterTask
+        name: pattern-matcher
+    - name: test-audit-attestation
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageAutoGov)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: audit-attestation
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameTest)
+      runAfter:
+        - test-stage-gate
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.test-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: test-deploy-or-update-environment
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageDeploy)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: deploy
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameTest)
+      runAfter:
+        - test-audit-attestation
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.test-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: test-validate-environment-configuration
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageValidateEnvironmentConfiguration)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: validate-environment-configuration
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameTest)
+      runAfter:
+        - test-deploy-or-update-environment
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.test-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: test-run-user-acceptance-tests
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageUAT)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: uat
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameTest)
+      runAfter:
+        - test-validate-environment-configuration
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.test-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: test-generate-evidence
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageAutoGov)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: generate-evidence
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameTest)
+      runAfter:
+        - test-run-user-acceptance-tests
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.test-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: prod-stage-gate
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: input
+          value: $(params.appRepoRef)
+        - name: pattern
+          value: $(params.releaseGitRefPatterns)
+      runAfter:
+        - test-generate-evidence
+      taskRef:
+        kind: ClusterTask
+        name: pattern-matcher
+    - name: prod-audit-attestation
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageAutoGov)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: audit-attestation
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameProd)
+      runAfter:
+        - prod-stage-gate
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.prod-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: prod-deploy-or-update-environment
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageDeploy)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: deploy
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameProd)
+      runAfter:
+        - prod-audit-attestation
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.prod-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: prod-validate-environment-configuration
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageValidateEnvironmentConfiguration)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: validate-environment-configuration
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameProd)
+      runAfter:
+        - prod-deploy-or-update-environment
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.prod-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+    - name: prod-generate-evidence
+      params:
+        - name: verbose
+          value: $(params.verbose)
+        - name: image
+          value: $(params.workflowWorkerImageAutoGov)
+        - name: imagePullPolicy
+          value: $(params.workflowWorkersImagePullPolicy)
+        - name: stepRunnerPackageName
+          value: $(params.stepRunnerPackageName)
+        - name: venvPath
+          value: $(tasks.setup-workflow-step-runner.results.venvPath)
+        - name: stepName
+          value: generate-evidence
+        - name: stepRunnerConfigDir
+          value: $(params.stepRunnerConfigDir)
+        - name: environment
+          value: $(params.envNameProd)
+      runAfter:
+        - prod-validate-environment-configuration
+      taskRef:
+        kind: ClusterTask
+        name: ploigos-step-runner
+      when:
+        - input: $(tasks.prod-stage-gate.results.matches)
+          operator: in
+          values:
+            - 'true'
+      workspaces:
+        - name: home
+          workspace: home
+        - name: app
+          workspace: app
+        - name: ploigos-platform-config
+          workspace: ploigos-platform-config
+        - name: ploigos-platform-config-secrets
+          workspace: ploigos-platform-config-secrets
+  workspaces:
+    - description: |
+        Workspace for the container users home directory.
+      name: home
+    - description: >
+        Workspace to checkout the application this workflow is for and set as
+        the working directory
+
+        for the step executions.
+      name: app
+    - description: |
+        Workspace containing platform-level config.
+      name: ploigos-platform-config
+    - description: |
+        Workspace containing platform-level secrets.
+      name: ploigos-platform-config-secrets
+
