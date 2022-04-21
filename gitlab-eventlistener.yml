@@ -1,0 +1,30 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  finalizers:
+  - eventlisteners.triggers.tekton.dev
+  name: everything-pipeline-gitlab
+  namespace: devsecops
+spec:
+  namespaceSelector: {}
+  resources: {}
+  serviceAccountName: el-ploigos-workflow-app1-service1
+  triggers:
+  - bindings:
+    - kind: ClusterTriggerBinding
+      ref: gitlab-push-hack
+    interceptors:
+    - params:
+      - name: overlays
+        value:
+        - expression: '''main'''
+          key: branch_name
+        - expression: '''reference-quarkus-mvn-main-'''
+          key: pipelinerun_name
+      ref:
+        kind: ClusterInterceptor
+        name: cel
+    name: gitlab-push-hack
+    template:
+      ref: everything-pipeline
+

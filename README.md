@@ -290,7 +290,8 @@ oc expose svc el-everything-pipeline
 	* git push
 	* Enter the gitlab root credentials
 * Do all of that again for the project called reference-quarkus-mvn-gitops
-
+* oc create -f gitlab-ctb.yml
+* oc create -f gitlab-eventlistener.yml
 
 
 ## Troubleshooting
