@@ -18,6 +18,20 @@ Make sure the following components are installed on your local machine
 
 ## Setup Instructions
 
+To get started, clone this repository.  We will be mutating and adding files as part of the install instructions.  Either clone via SSH or HTTPS.
+
+- Clone with SSH remote:
+
+  ```shell
+  git clone git@github.com:ploigos-automated-governance/demo-postinstall.git
+  ```
+
+- Clone with HTTPS remote:
+
+  ```shell
+  git clone https://github.com/ploigos-automated-governance/demo-postinstall.git
+  ```
+
 ### First, Install the Ploigos Software Factory Platform
 
 1. Create a `CatalogSource` to import the RedHatGov operator catalog.
