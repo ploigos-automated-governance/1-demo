@@ -26,13 +26,13 @@ oc apply -f - << EOF
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-name: redhatgov-operators
-namespace: openshift-marketplace
+  name: redhatgov-operators
+  namespace: openshift-marketplace
 spec:
-sourceType: grpc
-image: quay.io/redhatgov/operator-catalog:latest
-displayName: Red Hat NAPS Community Operators
-publisher: RedHatGov
+  sourceType: grpc
+  image: quay.io/redhatgov/operator-catalog:latest
+  displayName: Red Hat NAPS Community Operators
+  publisher: RedHatGov
 EOF
 ```
 
