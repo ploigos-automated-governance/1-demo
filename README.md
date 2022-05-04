@@ -26,13 +26,13 @@ oc apply -f - << EOF
 apiVersion: operators.coreos.com/v1alpha1
 kind: CatalogSource
 metadata:
-name: redhatgov-operators
-namespace: openshift-marketplace
+  name: redhatgov-operators
+  namespace: openshift-marketplace
 spec:
-sourceType: grpc
-image: quay.io/redhatgov/operator-catalog:latest
-displayName: Red Hat NAPS Community Operators
-publisher: RedHatGov
+  sourceType: grpc
+  image: quay.io/redhatgov/operator-catalog:latest
+  displayName: Red Hat NAPS Community Operators
+  publisher: RedHatGov
 EOF
 ```
 
@@ -53,11 +53,11 @@ oc apply -f - << EOF
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-namespace: $PLOIGOS_PROJECT
-name: $PLOIGOS_PROJECT-og
+  namespace: $PLOIGOS_PROJECT
+  name: $PLOIGOS_PROJECT-og
 spec:
-targetNamespaces:
-- $PLOIGOS_PROJECT
+  targetNamespaces:
+    - $PLOIGOS_PROJECT
 EOF
 ```
 
@@ -67,14 +67,14 @@ oc apply -f - << EOF
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-name: ploigos-software-factory-operator
-namespace: $PLOIGOS_PROJECT
+  name: ploigos-software-factory-operator
+  namespace: $PLOIGOS_PROJECT
 spec:
-channel: alpha
-installPlanApproval: Automatic
-name: ploigos-software-factory-operator
-source: redhatgov-operators
-sourceNamespace: openshift-marketplace
+  channel: alpha
+  installPlanApproval: Automatic
+  name: ploigos-software-factory-operator
+  source: redhatgov-operators
+  sourceNamespace: openshift-marketplace
 EOF
 ```
 
