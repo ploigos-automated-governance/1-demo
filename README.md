@@ -34,7 +34,7 @@ To get started, clone this repository.  We will be mutating and adding files as 
 
 ### First, Install the Ploigos Software Factory Platform
 
-1. Create a `CatalogSource` to import the RedHatGov operator catalog.
+1 . Create a `CatalogSource` to import the RedHatGov operator catalog.
 ```shell
 oc apply -f - << EOF
 apiVersion: operators.coreos.com/v1alpha1
@@ -50,18 +50,18 @@ spec:
 EOF
 ```
 
-1. Create a project for your pipeline tooling to live.
+2 . Create a project for your pipeline tooling to live.
 ```shell
 export PLOIGOS_PROJECT=devsecops
 oc new-project $PLOIGOS_PROJECT
 ```
 
-2. Delete any `LimitRange` that might have been created from project templates.
+3 . Delete any `LimitRange` that might have been created from project templates.
 ```shell
 oc delete limitrange --all -n $PLOIGOS_PROJECT
 ```
 
-3. Create a new `OperatorGroup` to support installation into the `$PLOIGOS_PROJECT` namespace:
+4 . Create a new `OperatorGroup` to support installation into the `$PLOIGOS_PROJECT` namespace:
 ```shell
 oc apply -f - << EOF
 apiVersion: operators.coreos.com/v1
@@ -75,7 +75,7 @@ spec:
 EOF
 ```
 
-4. Install the Ploigos Software Factory Operator into the new namespace:
+5 . Install the Ploigos Software Factory Operator into the new namespace:
 ```shell
 oc apply -f - << EOF
 apiVersion: operators.coreos.com/v1alpha1
@@ -92,7 +92,7 @@ spec:
 EOF
 ```
 
-5 . Create a ```PloigosPlatform```.
+6 . Create a ```PloigosPlatform```.
 
 Invoke the following shell command in your terminal.
 
@@ -115,7 +115,7 @@ When complete, you'll see this at the end of the logs:
 
 ![Picture of logs for completed Ploigos Platforom install](assets/ploigos-softwrare-factory-platform-complete-screen.png)
 
-6. Resize the Nexus PVC to 100 GiB.
+7 . Resize the Nexus PVC to 100 GiB.
 Use the OpenShift UI.
 * Storage -> PersistentVolumeClaims -> Search for "nexus-sonatype-nexus-data" -> Select the pvc -> Actions -> Expand PVC
 * 100 GiB
@@ -123,14 +123,14 @@ Use the OpenShift UI.
 * Restart the nexus pod: Pods -> Click the 3 dots icon next to "nexus-sonatype-nexus-..." -> Delete Pod
 * Select "Delete"
 
-7. Install Rekor
+8 . Install Rekor
 ```shell
 oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quickstart/main/argo-cd-apps/app-of-apps/software-supply-chain-platform-ploigos-swf.yml
 ```
 
 ### Second, Install the Ploigos Software Factory Pipeline & Demo Application
 
-9. Install the everything pipeline using helm
+9 . Install the everything pipeline using helm
 ```shell
 git clone https://github.com/ploigos/ploigos-charts.git
 cp values.yaml ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
@@ -139,7 +139,7 @@ helm install -f values.yaml everything-pipeline .
 
 ```
 
-10. Fork the application code repository demo application
+10 . Fork the application code repository demo application
 * Look up the Gitea URL
   * `oc get route gitea -o yaml | yq .status.ingress[].host`
 * Look up the Gitea username
@@ -163,7 +163,7 @@ helm install -f values.yaml everything-pipeline .
   * Enter the username and password from above
   * `cd ..`
 
-11. Fork the gitops repository for the demo application
+11 . Fork the gitops repository for the demo application
 * Continue using the Gitea UI. Use the same URL / username / password from the previous step.
 * Navigate to the dashboard view (select "Dashboard" from the top menu).
 * Create a new repository for the demo app's gitops repo in the "platform" organization
@@ -185,13 +185,13 @@ helm install -f values.yaml everything-pipeline .
 
 ### Thrid, Update the Ploigos Software Factory Platform Configuration
 
-12. Export the Ploigos platform configuration.
+12 . Export the Ploigos platform configuration.
 ```shell
 oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq > config.yml
 oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq | base64 -d > config-secrets.yml
 ```
 
-13. Add Ploigos platform configuration for the generate-evidence step.
+13 . Add Ploigos platform configuration for the generate-evidence step.
 * Edit `config.yml` and add this to the bottom. Preserve the indentation (2 spaces).
 ```yaml
   generate-evidence:
@@ -218,7 +218,7 @@ oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq | base64 -d > con
 * Replace `EVIDENCE_DESTINATION_PASSWORD` with the value of `results-archive-destination-password`. This value should be on the last line of the file before you added the generate-evidence snippet.
 * Save `config-secrets.yml`.
 
-14. Add Ploigos platform configuration for the audit-attestation step.
+14 . Add Ploigos platform configuration for the audit-attestation step.
 * Edit `config.yml` and add this to the bottom. Preserve the indentation (2 spaces).
 ```yaml
   audit-attestation:
@@ -233,13 +233,13 @@ oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq | base64 -d > con
         workflow-policy-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-autogov-content/main/workflow-policy-prod.rego
 ```
 
-15. Update pgp private key for signing evidence
+15 . Update pgp private key for signing evidence
 ```shell
 `PKEY=$(yq '.step-runner-config.sign-container-image[].config.container-image-signer-pgp-private-key' config-secrets.yml)
 `yq -i ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" config-secrets.yml`
 ```
 
-16. Add Ploigos platform configuration for the container-image-static-compliance-scan step
+16 . Add Ploigos platform configuration for the container-image-static-compliance-scan step
 * Edit `config.yml` and add this to the bottom. Preserve the indentation (2 spaces).
 ```yaml
   container-image-static-compliance-scan:
@@ -251,34 +251,34 @@ oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq | base64 -d > con
         oscap-profile: xccdf_com.ploigos_profile_standard_compliance_ploigos_reference_apps
 ```
 
-17. Create a new ConfigMap and Secret with the updated Ploigos platform configuration.
+17 . Create a new ConfigMap and Secret with the updated Ploigos platform configuration.
 ```shell
 oc create cm ploigos-platform-config-demo --from-file=config.yml -n devsecops
 oc create secret generic ploigos-platform-config-secrets-demo --from-file config-secrets.yml -n devsecops
 ```
 
-18. Test the pipeline with the new configuration.
+18 . Test the pipeline with the new configuration.
 ```shell
 oc create -f everything-pipelinerun.yml 
 ```
 
 ### Fourth, Expose the Pipeline as a Service, and Onboard the Demo Application
 
-19. Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).
+19 . Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).
 ```shell
 oc create -f el.yml
 oc create -f tt.yml
 oc expose svc el-everything-pipeline
 ```
 
-21. Create webhook in gitea for demo app.
+20 . Create webhook in gitea for demo app.
 * In the the Gitea web open the *app source code* repo named reference-quarkus-mvn. (Not the -gitops repo.)
 * The URL should be something like https://gitea-devsecops.apps.your.cluster.com/platform/reference-quarkus-mvn
 * Settings (top right) -> Webhooks -> Add Webhook -> Gitea
 * Target URL - Enter the URL for the Route you just created for the EventListener. You can get it with `echo "http://$(oc get route el-everything-pipeline -o yaml | yq .status.ingress[].host)/"` 
 * Select "Add Webhook"
 
-20. Test the webhook by editing the source code in the Gitea UI.
+21 . Test the webhook by editing the source code in the Gitea UI.
 * In the Gitea UI browse to the reference-quarkus-mvn project
 * Select "README.md"
 * Select "Edit File" (pencil icon to the top right)
@@ -290,9 +290,9 @@ oc expose svc el-everything-pipeline
   * Pipelines (tab in the left navigation) -> Pipelines
 * The pipeline should finish successfully. This may take 15+ minutes.
 
-21. Edit the yaml for the app1-service Pipeline. Under tasks:, for the task named ci-push-container-image-to-repository, in the taskRef: field, change name to ci-push-container-image-to-repository.
+22 . Edit the yaml for the app1-service Pipeline. Under tasks:, for the task named ci-push-container-image-to-repository, in the taskRef: field, change name to ci-push-container-image-to-repository.
 
-22.  Gitlab setup instructions
+23 .  Gitlab setup instructions
 * Look up gitlab root credentials
 	* The username is "root"
 	* For the password, look in secret gitlab-gitlab-initial-root-password in namespace gitlab-system
