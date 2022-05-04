@@ -287,8 +287,8 @@ Edit `config.yml` and add this to the bottom. Preserve the indentation (2 spaces
 15 . Update pgp private key for signing evidence
 
 ```shell
-`PKEY=$(yq '.step-runner-config.sign-container-image[].config.container-image-signer-pgp-private-key' config-secrets.yml)
-`yq -i ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" config-secrets.yml`
+PKEY=$(yq '.step-runner-config.sign-container-image[].config.container-image-signer-pgp-private-key' config-secrets.yml)
+yq -i ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" config-secrets.yml
 ```
 
 16 . Add Ploigos platform configuration for the container-image-static-compliance-scan step
