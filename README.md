@@ -92,10 +92,28 @@ spec:
 EOF
 ```
 
-5. Create a PloigosPlatform.
+5 . Create a ```PloigosPlatform```.
+
+Invoke the following shell command in your terminal.
+
 ```shell
 oc create -f tekton-platform.yml
 ```
+
+This command begins the 10 - 15 minutes to installation process.   During this process, the following tools will be setup:
+
+- Gitea - Source Code Rep
+- Tekton - Continuous Integration
+- Nexus - Artifact Repository & Container Registry
+- SonarQube - Static Code Analysis
+- ArgoCD - Continuous Deployment
+- Selenium - User Acceptance Testing
+
+To know when the platform has been fully installed, access the logs of the pod named: ```ploigos-controller-[random-characters-here]```.  
+
+When complete, you'll see this at the end of the logs:
+
+![Picture of logs for completed Ploigos Platforom install](assets/ploigos-softwrare-factory-platform-complete-screen.png)
 
 6. Resize the Nexus PVC to 100 GiB.
 Use the OpenShift UI.
