@@ -14,7 +14,7 @@ There are four (4) large tasks to setup and run the demo:
 Make sure the following components are installed on your local machine
 
 - [OpenShift cli](https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html) - Create applications and manage OpenShift Container Platform projects from a terminal
-- [yqc cli](https://github.com/mikefarah/yq) - A lightweight and portable command-line YAML, JSON and XML processor
+- [yq cli](https://github.com/mikefarah/yq) - A lightweight and portable command-line YAML, JSON and XML processor
 
 ## Setup Instructions
 
