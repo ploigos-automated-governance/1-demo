@@ -97,7 +97,7 @@ spec:
 EOF
 ```
 
-6 . Create a ```PloigosPlatform```.
+6 . Create a `PloigosPlatform`.
 
 Invoke the following shell command in your terminal.
 
@@ -150,27 +150,49 @@ helm install -f values.yaml everything-pipeline .
 10 . Fork the application code repository demo application
 
 - Look up the Gitea URL
-  - `oc get route gitea -o yaml | yq .status.ingress[].host`
+  
+  ```shell
+  oc get route gitea -o yaml | yq .status.ingress[].host 
+  ```
+
 - Look up the Gitea username
-  - `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo`
+
+  ```shell
+  oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo
+  ```
+
 - Look up the Gitea password
-  - `oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo`
-- Using the above URL / username / password, log into Gitea using your browser.
+
+  ```shell
+  oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo 
+  ```
+
+- Using the above Gitea URL / username / password, log into Gitea using your browser.
 - Create a new repository for the demo app in the "platform" organization
   - Organization (small tab on the right side of the screen) -> platform -> New Repository
   - Repository Name: `reference-quarkus-mvn`
   - Select "Create Repository"
   - Select the clipboard icon to copy the HTTPS clone URL
   - Save that URL but don't use it yet
-- Clone the upstream repository for the demo app
-  - `git clone https://github.com/ploigos-automated-governance/reference-quarkus-mvn.git`
-  - `cd reference-quarkus-mvn`
+- Clone the upstream repository for the demo app, and navigate to the source code
+
+  ```shell
+  git clone https://github.com/ploigos-automated-governance/reference-quarkus-mvn.git
+  cd reference-quarkus-mvn
+  ```
+
 - Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved
-  - `git remote set-url origin <<YOUR URL>>`
-- Push the upstream code to the new repo that you created in Gitea
-  - `git push`
-  - Enter the username and password from above
-  - `cd ..`
+
+  ```shell
+  git remote set-url origin <<YOUR URL>>
+  ```
+
+- Push the upstream code to the new repo that you created in Gitea.  Use the username and password from above when prompted for credentials.  After a successful push, naviagate back to the project root directory.
+
+  ```shell
+  git push
+  cd ..
+  ```
 
 11 . Fork the gitops repository for the demo application
 
@@ -184,14 +206,24 @@ helm install -f values.yaml everything-pipeline .
   - Select the clipboard icon to copy the HTTPS clone URL
   - Save that URL but don't use it yet
 - Clone the upstream gitops repository for the demo app
-  - `git clone https://github.com/ploigos-automated-governance/reference-quarkus-mvn-gitops.git`
-  - `cd reference-quarkus-mvn-cloud-resources_tekton_workflow-everything`
-- Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved
-  - `git remote set-url origin <<YOUR URL>>`
-- Push the upstream code to the new repo that you created in Gitea
-  - `git push`
-  - Enter the username and password from above if prompted
-  - `cd ..`
+
+  ```shell
+  git clone https://github.com/ploigos-automated-governance/reference-quarkus-mvn-gitops.git
+  cd reference-quarkus-mvn-cloud-resources_tekton_workflow-everything
+  ```
+
+- Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved.
+
+  ```shell
+  git remote set-url origin <<YOUR URL>>
+  ```
+
+- Push the upstream code to the new repo that you created in Gitea.  Use the username and password from above when prompted for credentials.  After a successful push, naviagate back to the project root directory.
+
+  ```shell
+  git push
+  cd ..
+  ```
 
 ### Thrid, Update the Ploigos Software Factory Platform Configuration
 
@@ -299,9 +331,14 @@ oc expose svc el-everything-pipeline
 20 . Create webhook in gitea for demo app.
 
 - In the the Gitea web open the *app source code* repo named reference-quarkus-mvn. (Not the -gitops repo.)
-- The URL should be something like ``` https://gitea-devsecops.apps.your.cluster.com/platform/reference-quarkus-mvn ```
+- The URL should be something like `https://[your-gitea-cluster-url]/platform/reference-quarkus-mvn`
 - Settings (top right) -> Webhooks -> Add Webhook -> Gitea
-- Target URL - Enter the URL for the Route you just created for the EventListener. You can get it with ``` echo "http://$(oc get route el-everything-pipeline -o yaml | yq .status.ingress[].host)/" ```
+- Target URL - Enter the URL for the Route you just created for the EventListener. You can get it with:
+
+  ```shell
+  echo "http://$(oc get route el-everything-pipeline -o yaml | yq .status.ingress[].host)/"
+  ```
+
 - Select "Add Webhook"
 
 21 . Test the webhook by editing the source code in the Gitea UI.
@@ -333,27 +370,46 @@ oc expose svc el-everything-pipeline
 - UNCHECK the checkbox for 'Initialize repository with a README'
 - Select the button at the bottom to create the repo
 - In Gitea, browse to the reference-quarkus-mvn project.
-  - Example url: `https://gitea-devsecops.apps.n4vqtd9t.usgovvirginia.aroapp.azure.us/platform/reference-quarkus-mvn`
+  - Example url: `https://[your-gitea-cluster-url]/platform/reference-quarkus-mvn`
   - Copy the Clone URL (clipboard button, top right, between the text box that contains an https: url and the 'Download Repository' button)
 - In the terminal
-  - ``` git clone <paste the url you just copied from gitea> ```
-  - ``` cd reference-quarkus-mvn/ ```
-  - ``` git config http.sslVerify "false" ```
-- In GitLab, on the page for the new project
+
+  ```shell
+  git clone <<paste the url you just copied from gitea>>
+  cd reference-quarkus-mvn/
+  git config http.sslVerify "false"
+  ```
+
+  - In GitLab, on the page for the new project
   - Select the 'Clone' dropdown, Select the clipboard icon under 'Clone with HTTPS'
-- In the terminal,
-  - ``` git remote set-url origin <paste the url you just copied from gitlab> ```
-  - ``` git push ```
+- In the terminal
+
+  ```shell
+  git remote set-url origin <paste the url you just copied from gitlab>
+  git push
+  ```
+
   - Enter the gitlab root credentials
 - Do all of that again for the project called reference-quarkus-mvn-gitops
-- ``` oc create -f gitlab-ctb.yml ```
-- ``` oc create -f gitlab-eventlistener.yml ```
+- Add the  EventListner and ClusterBindingTrigger for GitLab
+
+  ```shell
+  oc create -f gitlab-ctb.yml
+  oc create -f gitlab-eventlistener.yml
+  ```
 
 ## Troubleshooting
 
 ### How to retreive the admin credentials for ArgoCD
 
 - Username
-  - ``` oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo ```
+
+  ```shell
+  oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo 
+  ```
+  
 - Password
-  - ``` oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo ```
+
+  ```shell
+  oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo 
+  ```
