@@ -53,11 +53,11 @@ oc apply -f - << EOF
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-namespace: $PLOIGOS_PROJECT
-name: $PLOIGOS_PROJECT-og
+  namespace: $PLOIGOS_PROJECT
+  name: $PLOIGOS_PROJECT-og
 spec:
-targetNamespaces:
-- $PLOIGOS_PROJECT
+  targetNamespaces:
+    - $PLOIGOS_PROJECT
 EOF
 ```
 
