@@ -4,10 +4,10 @@ This repository provides the means to stand up and experiment with autoamted gov
 
 There are four (4) large tasks to setup and run the demo:
 
-1. First, Install the Ploigos Software Factory Platform
-2. Second, Install the Ploigos Software Factory Pipeline & Demo Application
-3. Thrid, Updated the Ploigos Software Factory Platform Configuration
-4. Fourth, Expose the Pipeline as a Service, and Onboard the Demo Application
+1. First    - Install the Ploigos Software Factory Opertor, and install a Ploigos Platform
+2. Second   - Install the Ploigos Pipeline, and install the demo application
+3. Thrid    - Update the Ploigos Platform configuration
+4. Fourth   - Expose the Pipeline as a Service, and onboard the demo application
 
 ## Before You Start
 
