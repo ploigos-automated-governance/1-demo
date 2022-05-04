@@ -160,8 +160,8 @@ helm install -f values.yaml everything-pipeline .
 
 12. Export the Ploigos platform configuration.
 ```shell
-oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq .data[] > config.yml
-oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq .data[] | base64 -d > config-secrets.yml
+oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq > config.yml
+oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq | base64 -d > config-secrets.yml
 ```
 
 13. Add Ploigos platform configuration for the generate-evidence step.
