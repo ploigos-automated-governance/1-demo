@@ -67,14 +67,14 @@ oc apply -f - << EOF
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
-name: ploigos-software-factory-operator
-namespace: $PLOIGOS_PROJECT
+  name: ploigos-software-factory-operator
+  namespace: $PLOIGOS_PROJECT
 spec:
-channel: alpha
-installPlanApproval: Automatic
-name: ploigos-software-factory-operator
-source: redhatgov-operators
-sourceNamespace: openshift-marketplace
+  channel: alpha
+  installPlanApproval: Automatic
+  name: ploigos-software-factory-operator
+  source: redhatgov-operators
+  sourceNamespace: openshift-marketplace
 EOF
 ```
 
