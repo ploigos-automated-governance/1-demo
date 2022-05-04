@@ -128,11 +128,6 @@ Use the OpenShift UI.
 oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quickstart/main/argo-cd-apps/app-of-apps/software-supply-chain-platform-ploigos-swf.yml
 ```
 
-8. Expose a Rekor route
-```shell
-oc expose service rekor-server -n sigstore
-```
-
 ### Second, Install the Ploigos Software Factory Pipeline & Demo Application
 
 9. Install the everything pipeline using helm
