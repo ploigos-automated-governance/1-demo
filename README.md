@@ -32,6 +32,8 @@ To get started, clone this repository.  We will be mutating and adding files as 
   git clone https://github.com/ploigos-automated-governance/demo-postinstall.git
   ```
 
+Once cloned, navigate into the cloned project directory to strat the nest steps
+
 ### First, Install the Ploigos Software Factory Platform
 
 1 . Create a `CatalogSource` to import the RedHatGov operator catalog.
