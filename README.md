@@ -80,7 +80,7 @@ EOF
 
 5. Create a PloigosPlatform.
 ```shell
-oc create -f tekton-platform.yml```
+oc create -f tekton-platform.yml
 ```
 
 6. Resize the Nexus PVC to 100 GiB.
