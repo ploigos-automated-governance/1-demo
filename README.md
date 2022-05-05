@@ -134,7 +134,7 @@ Use the OpenShift UI.
 8 . Install Rekor
 
 ```shell
-oc create -f https://raw.githubusercontent.com/ploigos/openshift-pipelines-quickstart/main/argo-cd-apps/app-of-apps/software-supply-chain-platform-ploigos-swf.yml
+oc create -f https://raw.githubusercontent.com/ploigos-automated-governance/2-platform-ops/main/argo-cd-apps/app-of-apps/simple-software-supply-chain-platform.yml
 ```
 
 ### Second, Install the Ploigos Software Factory Pipeline & Demo Application
