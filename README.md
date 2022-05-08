@@ -89,7 +89,7 @@ There are some baked in assupmtions with this install.  They are as follows:
   -  `devsecops`
   -  `sigstore`
 
-#### Step #1 Directions
+#### Let's Get Started!
 
 Let's install and configure the software factory!  We are using a kustomize application to simplify this process.
 
