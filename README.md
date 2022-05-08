@@ -225,7 +225,7 @@ helm install -f values.yaml everything-pipeline .
 - Navigate to the dashboard view (select "Dashboard" from the top menu).
 - Create a new repository for the demo app's gitops repo in the "platform" organization
   - Organization (small tab on the right side of the screen) -> platform -> New Repository
-  - Repository Name: `reference-quarkus-mvn-gitops`
+  - Repository Name: `reference-quarkus-mvn-ops`
     - **NOTE:** you have to either a) use this exact name for the repo, or b) update the file located at `cicd/ploigos-software-factory-operator/ploigos-step-runner-config/config.yml` in your fork of the app source code repository with whatever name you want to use.
   - Select "Create Repository"
   - Select the clipboard icon to copy the HTTPS clone URL
@@ -233,7 +233,7 @@ helm install -f values.yaml everything-pipeline .
 - Clone the upstream gitops repository for the demo app
 
   ```shell
-  git clone https://github.com/ploigos-automated-governance/reference-quarkus-mvn-gitops.git
+  git clone https://github.com/ploigos-automated-governance/reference-quarkus-mvn-ops.git
   cd reference-quarkus-mvn-cloud-resources_tekton_workflow-everything
   ```
 
@@ -355,7 +355,7 @@ oc expose svc el-everything-pipeline
 
 20 . Create webhook in gitea for demo app.
 
-- In the the Gitea web open the *app source code* repo named reference-quarkus-mvn. (Not the -gitops repo.)
+- In the the Gitea web open the *app source code* repo named reference-quarkus-mvn. (Not the -ops repo.)
 - The URL should be something like `https://[your-gitea-cluster-url]/platform/reference-quarkus-mvn`
 - Settings (top right) -> Webhooks -> Add Webhook -> Gitea
 - Target URL - Enter the URL for the Route you just created for the EventListener. You can get it with:
@@ -415,7 +415,7 @@ oc expose svc el-everything-pipeline
   ```
 
   - Enter the gitlab root credentials
-- Do all of that again for the project called reference-quarkus-mvn-gitops
+- Do all of that again for the project called reference-quarkus-mvn-ops
 - Add the  EventListner and ClusterBindingTrigger for GitLab
 
   ```shell
