@@ -4,8 +4,10 @@ This repository provides the means to stand up and experiment with autoamted gov
 
 There are four (4) large tasks to setup and run the demo:
 
-1. First    - Install the Ploigos Software Factory Opertor, and install a Ploigos Platform
-2. Second   - Install the Ploigos Pipeline, and install the demo application
+1. First    - Install the all the automated governance tools & systems 
+  a. Ploigos Software Factory Opertor
+  b. `PloigosPlatform`
+2. Second   - Install the  Ploigos Pipeline, and the demo application
 3. Thrid    - Update the Ploigos Platform configuration
 4. Fourth   - Expose the Pipeline as a Service, and onboard the demo application
 
@@ -13,12 +15,42 @@ There are four (4) large tasks to setup and run the demo:
 
 Make sure the following components are installed on your local machine
 
-- [OpenShift cli](https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html) - Create applications and manage OpenShift Container Platform projects from a terminal
-- [yq cli](https://github.com/mikefarah/yq) - A lightweight and portable command-line YAML, JSON and XML processor
+- [OpenShift cli](https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html) - Create applications and manage OpenShift Container Platform projects from a terminal.
+- [yq cli](https://github.com/mikefarah/yq) - A lightweight and portable command-line YAML, JSON and XML processor.
+
+This demo assumes your kubernetes distribution is OpenShift 4.x, and  you have cluster administrator rights.  If you do not have an OpenShift cluster with these rights, we recommend a cluster from one of the Red Hat cloud partners.  
+
+- [OpenShift on Microsoft Azure](https://www.redhat.com/en/technologies/cloud-computing/openshift/try-it)
+  - At the time of writing these instructions, there is a 30-day free developer trial.
+- [OpenShift on Amazon Web Services](https://aws.amazon.com/quickstart/architecture/openshift/)
+  - At the time of writing these instructions, there is a demo trial available if you complete some questionaire information.
+
+You can use [OpenShift Local](https://developers.redhat.com/products/openshift-local/overview) as well.  The only limitation with local development is the inability for anyone else to access your cluster.
 
 ## Setup Instructions
 
-To get started, clone this repository.  We will be mutating and adding files as part of the install instructions.  Either clone via SSH or HTTPS.
+1 . Ensure you have an OpenShift 4.x cluster running and accessible to you.
+
+2 . Log into your cluster `oc` cli.  You'll need a terminal and web browser to complete this task.
+
+  - Access the OpenShift web console.
+  - At the top right of the web console, you'll see your username, click it.  This will drop down a submenu with a couple options.
+  - Click  the `Copy login command` option.  This will open a new webpage with the blue text of `Display Token` at the top left-hand side of the page.  
+  - Click on `Display Token`. Once clicked, the webpage will refresh with some information. 
+  - Find the header `Login with this token`
+  - Under the header `Login with this token`, you will see a login command that beings with `oc login --token= ...`.  It will resmeble a command such as this one:
+
+  *Sample OC Login Command*
+
+  ```shell
+  oc login --token=sha256~12dHbGNWjMhnuJ7-qhx9tAMnjrJaRpfdswo2HoXUy8_0 --server=https://api.ci-ln-1ldd90k-72292.aws.dev.cloud.com:6443
+  ```
+
+  - Copy the full `oc login --token= ...` command from your web browser, and paste it into your termainal. Invoke the command in your terminal and follow the directions.  DO NOT COPY AND PAST THE SAMPLE OC LOGIN COMMAND, IT WILL NOT WORK.
+  - Validate you're logged in by invoking the commaned `oc get status`.  The terminal will ouput  information. The first line will say `In project default on server ...`.  
+  - You are succesfully logged in if the response has the exact server used in the oc login command.
+
+2 . Clone this repository.  We will mutaate, and add files as part of the demo.  Either clone via SSH or HTTPS.
 
 - Clone with SSH remote:
 
@@ -32,110 +64,101 @@ To get started, clone this repository.  We will be mutating and adding files as 
   git clone https://github.com/ploigos-automated-governance/demo-postinstall.git
   ```
 
-Once cloned, navigate into the cloned project directory to strat the nest steps
+Once cloned, navigate into the cloned project directory.  We will begin our installation from the cloned project directory.
 
-### First, Install the Ploigos Software Factory Platform
+### First, Install the automated governance tools & system
 
-1 . Create a `CatalogSource` to import the RedHatGov operator catalog.
+#### What To Exepct Form This Step
 
-```shell
-oc apply -f - << EOF
-apiVersion: operators.coreos.com/v1alpha1
-kind: CatalogSource
-metadata:
-  name: redhatgov-operators
-  namespace: openshift-marketplace
-spec:
-  sourceType: grpc
-  image: quay.io/redhatgov/operator-catalog:latest
-  displayName: Red Hat NAPS Community Operators
-  publisher: RedHatGov
-EOF
-```
+This step gets you up and running with all  tooling and systems you need. You'll have done the following when complete with section.
 
-2 . Create a project for your pipeline tooling to live.
+- Installation and basic configuration for the following tools in the `devsecops` namespace:
+  - Gitea - Source Code Repo
+  - OpenShift Pipelines (Tekton) - Continuous Integration
+  - OpenShift GitOps (ArgoCD) - Continuous Deployment
+  - Nexus - Artifact Repository & Container Registry
+  - SonarQube - Static Code Analysis
+  - Selenium - User Acceptance Testing
+- Installation and basic configuration for the following tools in the `sigstore` namespace:
+  - Rekor - Transparency Log
 
-```shell
-export PLOIGOS_PROJECT=devsecops
-oc new-project $PLOIGOS_PROJECT
-```
+There are some baked in assupmtions with this install.  They are as follows:
 
-3 . Delete any `LimitRange` that might have been created from project templates.
+- The kubernetes distribution is OpenShift 4.x
+- You are not using the namespaces
+  -  `devsecops`
+  -  `sigstore`
 
-```shell
-oc delete limitrange --all -n $PLOIGOS_PROJECT
-```
+#### Step #1 Directions
 
-4 . Create a new `OperatorGroup` to support installation into the `$PLOIGOS_PROJECT` namespace:
+Let's install and configure the software factory!  We are using a kustomize application to simplify this process.
 
-```shell
-oc apply -f - << EOF
-apiVersion: operators.coreos.com/v1
-kind: OperatorGroup
-metadata:
-  namespace: $PLOIGOS_PROJECT
-  name: $PLOIGOS_PROJECT-og
-spec:
-  targetNamespaces:
-    - $PLOIGOS_PROJECT
-EOF
-```
+**1 . Clone the Ploigos Automated Governance Platform repository.**
 
-5 . Install the Ploigos Software Factory Operator into the new namespace:
+  ```shell
+  git clone git@github.com:ploigos-automated-governance/2-platform-ops.git
+  ```
 
-```shell
-oc apply -f - << EOF
-apiVersion: operators.coreos.com/v1alpha1
-kind: Subscription
-metadata:
-  name: ploigos-software-factory-operator
-  namespace: $PLOIGOS_PROJECT
-spec:
-  channel: alpha
-  installPlanApproval: Automatic
-  name: ploigos-software-factory-operator
-  source: redhatgov-operators
-  sourceNamespace: openshift-marketplace
-EOF
-```
+**2 . Navigate to the cloned repo root folder: `2-platform-ops`. Begin the software factory installation with the following commands.**
 
-6 . Create a `PloigosPlatform`.
+  ```shell
+  oc apply -k argo-cd-apps/overlays/ploigos-software-factory
+  oc delete limitrange --all -n devsecops
+  oc delete limitrange --all -n sigstore
+  ```
 
-Invoke the following shell command in your terminal.
+  The first command is invoking the install.  The second two commands, `oc delete limitrange ...` are there as a precaution.  Some OpenShift configurations will set compute, storage, and memory limits on newly created namespaces.  For this demo, we are going to remove those limits.
+
+  **Get An Error?**
+  If you recieved an error about the `PloigosPlatform` not being found, simply re-invoke the commands.  
+  
+  Why did this happen? There is a `PloigosPlatform` custom resource that is invoked as part of the kustomize app.  This `PloigosPlatform` resoruce depends upon the sofware factory operator being completly registered.  It may happen that the operator has not registered the customer resource definitions by the time the `PloigosPlatform` resource is invoked.
+
+  **NOTE**
+  This begins the 5 - 10 minutes to installation process.  If the network connection is slower than normal, this could take upwards of 15 minutes.
+  
+  To validate the platform has been set up properly, you can do any of these two actions:
+
+  - Within the `devsecops` project, access the logs of the pod named: ```
+ploigos-operator-controller-manager-[random-characters-here]```. If complete, the logs will be done generating, and you'll see a meassage like this:
+
+  ![Picture of logs for completed Ploigos Platforom install](assets/ploigos-softwrare-factory-platform-complete-screen.png)
+
+  - Within the project `devsecops`, navigate the `Routes` by finding the `Networking` selection on the side nav menu.  Click the `Networking` selection, then in the networking submenu select `Routes`.  With the exception of `nexus-docker`, you should be able to access each web interface.
+
+Once you have validated all software factory componenets are up and running, being the next step.
+
+**3 . Install the SigStore components, Rekor.**
 
 ```shell
-oc create -f tekton-platform.yml
+oc apply -f argo-cd-apps/app-of-apps/simple-software-supply-chain-platform.yml
 ```
 
-This command begins the 10 - 15 minutes to installation process.   During this process, the following tools will be setup:
+Installing Rekor should talk about 3 - 5 minutes.  You can validate Rekor is up-and-running by navigating to the `Routes` within the `sigstore` namespace.  Follow the same directions that were provided in step 1, although use the `sigstore` namespace.
 
-- Gitea - Source Code Rep
-- Tekton - Continuous Integration
-- Nexus - Artifact Repository & Container Registry
-- SonarQube - Static Code Analysis
-- ArgoCD - Continuous Deployment
-- Selenium - User Acceptance Testing
+Click on the `rekor-server-route` Location, and you'll get a simple website with the heading `Rekor Server`.
 
-To know when the platform has been fully installed, access the logs of the pod named: ```ploigos-controller-[random-characters-here]```.  
+**4 . Resize the Nexus PVC**
 
-When complete, you'll see this at the end of the logs:
+The default storage size is not enough for continued use with this demo.  Therefore, we need to increase it from it's current setting to 100 Gib.
 
-![Picture of logs for completed Ploigos Platforom install](assets/ploigos-softwrare-factory-platform-complete-screen.png)
+Using the OpenShift web console, withing the `devsecops` namespace:
 
-7 . Resize the Nexus PVC to 100 GiB.
-Use the OpenShift UI.
-
-- Storage -> PersistentVolumeClaims -> Search for "nexus-sonatype-nexus-data" -> Select the pvc -> Actions -> Expand PVC
-- 100 GiB
+- Use the left hand naviation to navigate to `Storage` -> `PersistentVolumeClaims`
+- Search for *nexus-sonatype-nexus-data*
+- Select the `nexus-sonatype-nexus-data` pvc
+- Once selected, you'll see information about the PVC.  At the top right-hand side of the web sconcoles you'll see an `Actions` dropdown option, selection
+- Within `Actions`, select `Expand PVC`
+- Update to 100 GiB
 - Select "Expand"
-- Restart the nexus pod: Pods -> Click the 3 dots icon next to "nexus-sonatype-nexus-..." -> Delete Pod
-- Select "Delete"
+- Once complete, restart the nexus pod.  Still within the `devsecops` project, use the left hand navigfation to go to `Workloads` -> `Pods`
+- Find the pod that starts with  "nexus-sonatype-nexus-..." 
+- Click the 3 dots next to the pod, then seelct "Delete Pod"
+- When prompted, select "Delete"
 
-8 . Install Rekor
+The pod will be deleted, then a new one will be created.  With the creation of this new pod, the PVC expansion will be registered.
 
-```shell
-oc create -f https://raw.githubusercontent.com/ploigos-automated-governance/2-platform-ops/main/argo-cd-apps/app-of-apps/simple-software-supply-chain-platform.yml
-```
+We are now ready for the second step.
 
 ### Second, Install the Ploigos Software Factory Pipeline & Demo Application
 
