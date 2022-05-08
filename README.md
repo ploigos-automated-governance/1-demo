@@ -219,7 +219,7 @@ helm install -f values.yaml everything-pipeline .
   cd ..
   ```
 
-11 . Fork the gitops repository for the demo application
+11 . Fork the ops repository for the demo application
 
 - Continue using the Gitea UI. Use the same URL / username / password from the previous step.
 - Navigate to the dashboard view (select "Dashboard" from the top menu).
