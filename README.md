@@ -284,6 +284,8 @@ In this section we doe three things:
 
 #### Modify Default config.yml
 
+Another reminder, make sure you are in the `1-demo` directory for these instructions.
+
 **1 . Export the current config.yml from the cluster to your local machine**
 
 ```shell
@@ -308,6 +310,8 @@ oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq > config.yml
  - Save `config.yml`
 
 #### Modify Default config-secrets.yml
+
+Yet, another reminder, make sure you are in the `1-demo` directory for these instructions.
 
 **1 . Export the current config-secrets.yml from the cluster to your local machine**
 
