@@ -70,7 +70,7 @@ spec:
   pipelineRef:
     name: app1-service1
   resources: []
-  serviceAccountName: ploigos-workflow-app1-service1
+  serviceAccountName: pipeline
   workspaces:
     - name: home
       volumeClaimTemplate:
