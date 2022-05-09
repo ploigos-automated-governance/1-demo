@@ -188,27 +188,27 @@ We are now ready for the second step.
 
 ### Second, Fork & Configure the Demo Application
 
-**1 . Fork the application code repository demo application**
+Before we start on this step, let's get some critical information first.  
 
-- Look up the Gitea URL
-  
-  ```shell
-  oc get route gitea -o yaml | yq .spec.host
-  ```
+#### Our Software Factory Username and Password
 
-- Look up the Gitea username
+The first critical info is our username and password.
 
-  ```shell
-  oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.username | base64 -d && echo
-  ```
-
-- Look up the Gitea password
+When we initially setup the software factory platform, a random password was generated for each tool, and then associated with the username *ploigos*.  To get the password, use the following command:
 
   ```shell
   oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo 
   ```
+  
+ Sace this password somewhere for quick copy and paste.
+ 
+ #### Our Routes for Software Factory tools & services
+ 
+The rest of these directions will talk about accessing one or more of the installed tools.  To access the tool, simply navigate to the `Routes` information by using the left-sided navigation. Click on `Networking`, the select `Routes`. You'll see all your routes for the namespace you are curently in.  To see all the software factory tooling routes, make sure you are in the `devsecops` namespace.  To see all the tooling for the software supply chain platform, make sure you are in the `sigstore` namespace. 
 
-- Using the above Gitea URL / username / password, log into Gitea using your browser.
+**1 . Fork the application code repository demo application**
+
+- Log into Gitea using your username and password.
 - Create a new repository for the demo app in the "platform" organization
   - Organization (small tab on the right side of the screen) -> platform -> New Repository
   - Repository Name: `reference-quarkus-mvn`
