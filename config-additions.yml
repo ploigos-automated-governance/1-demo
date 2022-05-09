@@ -1,0 +1,29 @@
+  generate-evidence:
+  - name: Generate and Push Evidence
+    implementer: GenerateEvidence
+    config:
+      evidence-destination-url: http://nexus-sonatype-nexus-service.devsecops.svc.cluster.local:8081/repository/workflow-evidence
+      evidence-destination-username: ploigos
+  - name: Sign Evidence
+    implementer: RekorSignEvidence
+    config:
+      rekor-server-url: REKOR_SERVER_URL
+
+  audit-attestation:
+  - name: Audit Attestation DEV
+    implementer: OpenPolicyAgent
+    environment-config:
+      DEV:
+        workflow-policy-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-autogov-content/main/workflow-policy-dev.rego
+      TEST:
+        workflow-policy-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-autogov-content/main/workflow-policy-test.rego
+      PROD:
+        workflow-policy-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-autogov-content/main/workflow-policy-prod.rego
+
+  container-image-static-compliance-scan:
+    - name: OpenSCAP - Compliance - SSG RHEL8
+      implementer: OpenSCAP
+      config:
+        oscap-input-definitions-uri: https://raw.githubusercontent.com/RedHatGov/rhel8-stig-latest/master/ssg-rhel8-ds.xml
+        oscap-tailoring-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-oscap-content/main/xccdf_com.ploigos_profile_standard_compliance_ploigos_reference_apps-tailoring.xml
+        oscap-profile: xccdf_com.ploigos_profile_standard_compliance_ploigos_reference_apps

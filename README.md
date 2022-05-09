@@ -68,7 +68,7 @@ Once cloned, navigate into the cloned project directory.  We will begin our inst
 
 ### First, Install the automated governance tools & system
 
-#### What To Exepct Form This Step
+#### What To Exepct From This First Step
 
 This step gets you up and running with all  tooling and systems you need. You'll have done the following when complete with section.
 
@@ -95,33 +95,37 @@ Let's install and configure the software factory!  We are using a kustomize appl
 
 **1 . Clone the Ploigos Automated Governance Platform repository.**
 
-  ```shell
-  git clone git@github.com:ploigos-automated-governance/2-platform-ops.git
-  ```
+```shell
+git clone git@github.com:ploigos-automated-governance/2-platform-ops.git
+```
 
 **2 . Navigate to the cloned repo root folder: `2-platform-ops`. Begin the software factory installation with the following commands.**
 
-  ```shell
-  oc apply -k argo-cd-apps/overlays/ploigos-software-factory
-  oc delete limitrange --all -n devsecops
-  oc delete limitrange --all -n sigstore
-  ```
+```shell
+oc apply -k argo-cd-apps/overlays/ploigos-software-factory
+oc delete limitrange --all -n devsecops
+oc delete limitrange --all -n sigstore
+```
 
-  The first command is invoking the install.  The second two commands, `oc delete limitrange ...` are there as a precaution.  Some OpenShift configurations will set compute, storage, and memory limits on newly created namespaces.  For this demo, we are going to remove those limits.
+The first command is invoking the install.  The second two commands, `oc delete limitrange ...` are there as a precaution.  Some OpenShift configurations will set compute, storage, and memory limits on newly created namespaces.  For this demo, we are going to remove those limits.
 
-  **Get An Error?**
-  If you recieved an error about the `PloigosPlatform` not being found, simply re-invoke the commands.  
-  
-  Why did this happen? There is a `PloigosPlatform` custom resource that is invoked as part of the kustomize app.  This `PloigosPlatform` resoruce depends upon the sofware factory operator being completly registered.  It may happen that the operator has not registered the customer resource definitions by the time the `PloigosPlatform` resource is invoked.
+**Get An Error?**
+If you recieved an error about the `PloigosPlatform` not being found, simply re-invoke the folllowing command:
 
-  **NOTE**
-  This begins the 5 - 10 minutes to installation process.  If the network connection is slower than normal, this could take upwards of 15 minutes.
-  
-  To validate the platform has been set up properly, you can do any of these two actions:
+```shell
+oc apply -k argo-cd-apps/overlays/ploigos-software-factory
+```  
+
+Why did this happen? There is a `PloigosPlatform` custom resource that is invoked as part of the kustomize app.  This `PloigosPlatform` resoruce depends upon the sofware factory operator being completly registered.  It may happen that the operator has not registered the customer resource definitions by the time the `PloigosPlatform` resource is invoked.
+
+**NOTE**
+This begins the 5 - 10 minutes to installation process.  If the network connection is slower than normal, this could take upwards of 15 minutes.
+
+To validate the platform has been set up properly, you can do any of these two actions:
 
   - Within the `devsecops` project, access the logs of the pod named: ```
 ploigos-operator-controller-manager-[random-characters-here]```. If complete, the logs will be done generating, and you'll see a meassage like this:
-
+  
   ![Picture of logs for completed Ploigos Platforom install](assets/ploigos-softwrare-factory-platform-complete-screen.png)
 
   - Within the project `devsecops`, navigate the `Routes` by finding the `Networking` selection on the side nav menu.  Click the `Networking` selection, then in the networking submenu select `Routes`.  With the exception of `nexus-docker`, you should be able to access each web interface.
@@ -158,21 +162,34 @@ Using the OpenShift web console, withing the `devsecops` namespace:
 
 The pod will be deleted, then a new one will be created.  With the creation of this new pod, the PVC expansion will be registered.
 
-We are now ready for the second step.
-
-### Second, Install the Ploigos Software Factory Pipeline & Demo Application
-
-9 . Install the everything pipeline using helm
+**5 . Install the everything pipeline using helm**
 
 ```shell
 git clone https://github.com/ploigos/ploigos-charts.git
 cp values.yaml ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
 pushd ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
 helm install -f values.yaml everything-pipeline .
-
 ```
 
-10 . Fork the application code repository demo application
+[todo - Future, add as part of 2-platform]
+
+**6 . Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).**
+
+```shell
+oc create -f el.yml
+oc create -f tt.yml
+oc expose svc el-everything-pipeline
+```
+
+[todo - Future, add as part of 2-platform]
+
+[experiment - test runing the everhything-pipline test from here, referencing the github app, not the gitea app]
+
+We are now ready for the second step.
+
+### Second, Fork & Configure the Demo Application
+
+**1 . Fork the application code repository demo application**
 
 - Look up the Gitea URL
   
@@ -219,7 +236,7 @@ helm install -f values.yaml everything-pipeline .
   cd ..
   ```
 
-11 . Fork the ops repository for the demo application
+**2 . Fork the ops repository for the demo application**
 
 - Continue using the Gitea UI. Use the same URL / username / password from the previous step.
 - Navigate to the dashboard view (select "Dashboard" from the top menu).
@@ -252,106 +269,84 @@ helm install -f values.yaml everything-pipeline .
 
 ### Thrid, Update the Ploigos Software Factory Platform Configuration
 
-12 . Export the Ploigos platform configuration.
+When we isntalled the softwre factory, a set of default configuration (config.yml) and configuration secrets (config-secrets.yml) were created for us.  We need to modify them from this demo.
+
+In this section we doe three things:
+
+-  Modify the default config.yml
+-  Modify the default config-secrets.yml
+-  Apply these newly modified config.yml and config-secrets.yml files to the cluster
+
+#### Modify Default config.yml
+
+**1 . Export the current config.yml from the cluster to your local machine**
 
 ```shell
 oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq > config.yml
+```
+
+**2 .Update `config.yml`**
+
+- Open the `config.yml` you just exported to your local machine.
+- Add the contents from the `config-additions.yml` to the bottom of the `config.yml`
+- Make sure to preserve the indentation (2 spaces) when copying.
+- Save `config.yml`, and keep the file open.
+
+**3 . Updating values in the `config.yml`**
+
+ - Replace `REKOR_SERVER_URL` with the output of:
+   
+ ```shell
+ echo "https://$(oc get route rekor-server -n sigstore -o yaml | yq '.status.ingress[].host')/"
+ ```
+
+ - Save `config.yml`
+
+#### Modify Default config-secrets.yml
+
+**1 . Export the current config-secrets.yml from the cluster to your local machine**
+
+```shell
 oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq | base64 -d > config-secrets.yml
 ```
 
-13 . Add Ploigos platform configuration for the generate-evidence step.
+**2 .Update `config-secrets.yml`**
 
-- Edit `config.yml` and add this to the bottom. Preserve the indentation (2 spaces).
+ - Open the `config-secrets.yml` you just exported to your local machine.
+ - Add the contents from the `config-secrets-additions.yml` to the bottom of the `config-secrets.yml`
+ - Make sure to preserve the indentation (2 spaces) when copying.
+ - Save `config-secrets.yml`, and keep the file open.
 
-```yaml
-  generate-evidence:
-  - name: Generate and Push Evidence
-    implementer: GenerateEvidence
-    config:
-      evidence-destination-url: http://nexus-sonatype-nexus-service.devsecops.svc.cluster.local:8081/repository/workflow-evidence
-      evidence-destination-username: ploigos
-  - name: Sign Evidence
-    implementer: RekorSignEvidence
-    config:
-      rekor-server-url: REKOR_SERVER_URL
-```
-
-- Replace `REKOR_SERVER_URL` with the output of `echo "https://$(oc get route rekor-server -n sigstore -o yaml | yq '.status.ingress[].host')/"`
-- Save `config.yml`.
-- Edit `config-secrets.yml` and add this to the bottom. Preserve the indentation (2 spaces).
-
-```yaml
-  generate-evidence:
-  - name: Generate and Push Evidence
-    implementer: GenerateEvidence
-    config:
-      evidence-destination-password: EVIDENCE_DESTINATION_PASSWORD
-```
+**3 . Updating values in the `config.yml`**
 
 - Replace `EVIDENCE_DESTINATION_PASSWORD` with the value of `results-archive-destination-password`. This value should be on the last line of the file before you added the generate-evidence snippet.
 - Save `config-secrets.yml`.
 
-14 . Add Ploigos platform configuration for the audit-attestation step.
-
-Edit `config.yml` and add this to the bottom. Preserve the indentation (2 spaces).
-
-```yaml
-
-  audit-attestation:
-  - name: Audit Attestation DEV
-    implementer: OpenPolicyAgent
-    environment-config:
-      DEV:
-        workflow-policy-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-autogov-content/main/workflow-policy-dev.rego
-      TEST:
-        workflow-policy-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-autogov-content/main/workflow-policy-test.rego
-      PROD:
-        workflow-policy-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-autogov-content/main/workflow-policy-prod.rego
-```
-
-15 . Update pgp private key for signing evidence
+**4 . Update pgp private key for signing evidence**
 
 ```shell
 PKEY=$(yq '.step-runner-config.sign-container-image[].config.container-image-signer-pgp-private-key' config-secrets.yml)
 yq -i ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" config-secrets.yml
 ```
 
-16 . Add Ploigos platform configuration for the container-image-static-compliance-scan step
+#### Apply updates to the clsuter
 
-Edit `config.yml` and add this to the bottom. Preserve the indentation (2 spaces).
+**1 . Create a new ConfigMap and Secret**
 
-```yaml
-  container-image-static-compliance-scan:
-    - name: OpenSCAP - Compliance - SSG RHEL8
-      implementer: OpenSCAP
-      config:
-        oscap-input-definitions-uri: https://raw.githubusercontent.com/RedHatGov/rhel8-stig-latest/master/ssg-rhel8-ds.xml
-        oscap-tailoring-uri: https://raw.githubusercontent.com/ploigos/ploigos-example-oscap-content/main/xccdf_com.ploigos_profile_standard_compliance_ploigos_reference_apps-tailoring.xml
-        oscap-profile: xccdf_com.ploigos_profile_standard_compliance_ploigos_reference_apps
-```
-
-17 . Create a new ConfigMap and Secret with the updated Ploigos platform configuration.
+Using thee update configy.yml and config-secrets.yml, we will update the Ploigos Platform configuration.
 
 ```shell
 oc create cm ploigos-platform-config-demo --from-file=config.yml -n devsecops
 oc create secret generic ploigos-platform-config-secrets-demo --from-file config-secrets.yml -n devsecops
 ```
 
-18 . Test the pipeline with the new configuration.
+**2. Test the pipeline with the new configuration.**
 
 ```shell
 oc create -f everything-pipelinerun.yml 
 ```
 
-### Fourth, Expose the Pipeline as a Service, and Onboard the Demo Application
-
-19 . Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).
-
-```shell
-oc create -f el.yml
-oc create -f tt.yml
-oc expose svc el-everything-pipeline
-```
+### Fourth, Onboard the Demo Application
 
 20 . Create webhook in gitea for demo app.
 
