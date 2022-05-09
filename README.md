@@ -171,11 +171,14 @@ git clone https://github.com/ploigos/ploigos-charts.git
 cp values.yaml ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
 pushd ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
 helm install -f values.yaml everything-pipeline .
+popd
 ```
 
 [todo - Future, add as part of 2-platform]
 
 **6 . Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).**
+
+As with the previous step, make sure you are in then `1-demo` directory before excuting these commands.
 
 ```shell
 oc create -f el.yml
