@@ -113,7 +113,7 @@ The first command is invoking the install.  The second two commands, `oc delete 
 If you recieved an error about the `PloigosPlatform` not being found, simply re-invoke the folllowing command:
 
 ```shell
-oc apply -k argo-cd-apps/overlays/ploigos-software-factory
+oc apply -k argo-cd-apps/base/ploigos-software-factory
 ```  
 
 Why did this happen? There is a `PloigosPlatform` custom resource that is invoked as part of the kustomize app.  This `PloigosPlatform` resoruce depends upon the sofware factory operator being completly registered.  It may happen that the operator has not registered the customer resource definitions by the time the `PloigosPlatform` resource is invoked.
