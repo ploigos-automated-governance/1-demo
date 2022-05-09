@@ -164,6 +164,8 @@ The pod will be deleted, then a new one will be created.  With the creation of t
 
 **5 . Install the everything pipeline using helm**
 
+Navigate back to the `1-demo` directory.  If you are not in this directory for the following command, you will get an effor.
+
 ```shell
 git clone https://github.com/ploigos/ploigos-charts.git
 cp values.yaml ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
