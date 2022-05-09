@@ -102,7 +102,7 @@ git clone git@github.com:ploigos-automated-governance/2-platform-ops.git
 **2 . Navigate to the cloned repo root folder: `2-platform-ops`. Begin the software factory installation with the following commands.**
 
 ```shell
-oc apply -k argo-cd-apps/overlays/ploigos-software-factory
+oc apply -k argo-cd-apps/base/ploigos-software-factory/
 oc delete limitrange --all -n devsecops
 oc delete limitrange --all -n sigstore
 ```
