@@ -289,7 +289,7 @@ Another reminder, make sure you are in the `1-demo` directory for these instruct
 **1 . Export the current config.yml from the cluster to your local machine**
 
 ```shell
-oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq > config.yml
+oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq '.data[]' > config.yml
 ```
 
 **2 .Update `config.yml`**
@@ -316,7 +316,7 @@ Yet, another reminder, make sure you are in the `1-demo` directory for these ins
 **1 . Export the current config-secrets.yml from the cluster to your local machine**
 
 ```shell
-oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq | base64 -d > config-secrets.yml
+oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq '.data[]' | base64 -d > config-secrets.yml
 ```
 
 **2 .Update `config-secrets.yml`**
