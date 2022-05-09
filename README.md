@@ -304,7 +304,7 @@ oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq '.data[]' > conf
  - Replace `REKOR_SERVER_URL` with the output of:
    
  ```shell
- echo "https://$(oc get route rekor-server -n sigstore -o yaml | yq '.status.ingress[].host')/"
+ echo "https://$(oc get route rekor-server-route -n sigstore -o yaml | yq '.status.ingress[].host')/"
  ```
 
  - Save `config.yml`
