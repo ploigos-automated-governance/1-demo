@@ -55,13 +55,13 @@ You can use [OpenShift Local](https://developers.redhat.com/products/openshift-l
 - Clone with SSH remote:
 
   ```shell
-  git clone git@github.com:ploigos-automated-governance/demo-postinstall.git
+  git clone git@github.com:ploigos-automated-governance/1-demo.git
   ```
 
 - Clone with HTTPS remote:
 
   ```shell
-  git clone https://github.com/ploigos-automated-governance/demo-postinstall.git
+  git clone https://github.com/ploigos-automated-governance/1-demo.git
   ```
 
 Once cloned, navigate into the cloned project directory.  We will begin our installation from the cloned project directory.
