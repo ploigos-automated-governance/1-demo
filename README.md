@@ -223,10 +223,11 @@ The rest of these directions will talk about accessing one or more of the instal
   cd reference-quarkus-mvn
   ```
 
-- Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved
+- Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved.  Your cluster may be using self-signed certs, therefore we need to disable sslVerify for this demo. NEVER DO THIS INPRODCUTION!!
 
   ```shell
   git remote set-url origin <<YOUR URL>>
+  git config http.sslVerify false
   ```
 
 - Push the upstream code to the new repo that you created in Gitea.  Use the username and password from above when prompted for credentials.  After a successful push, naviagate back to the project root directory.
@@ -257,10 +258,11 @@ The rest of these directions will talk about accessing one or more of the instal
   cd reference-quarkus-mvn-ops
   ```
 
-- Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved.
+- Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved.  Your cluster may be using self-signed certs, therefore we need to disable sslVerify for this demo. NEVER DO THIS INPRODCUTION!!
 
   ```shell
   git remote set-url origin <<YOUR URL>>
+  git config http.sslVerify false
   ```
 
 - Push the upstream code to the new repo that you created in Gitea.  Use the username and password from above when prompted for credentials.  After a successful push, naviagate back to the project root directory.
