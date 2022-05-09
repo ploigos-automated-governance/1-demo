@@ -174,8 +174,6 @@ helm install -f values.yaml everything-pipeline .
 popd
 ```
 
-[todo - Future, add as part of 2-platform]
-
 **6 . Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).**
 
 As with the previous step, make sure you are in then `1-demo` directory before excuting these commands.
@@ -185,10 +183,6 @@ oc create -f el.yml
 oc create -f tt.yml
 oc expose svc el-everything-pipeline
 ```
-
-[todo - Future, add as part of 2-platform]
-
-[experiment - test runing the everhything-pipline test from here, referencing the github app, not the gitea app]
 
 We are now ready for the second step.
 
