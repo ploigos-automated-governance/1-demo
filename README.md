@@ -193,7 +193,7 @@ We are now ready for the second step.
 - Look up the Gitea URL
   
   ```shell
-  oc get route gitea -o yaml | yq .status.ingress[].host 
+  oc get route gitea -o yaml | yq .spec.host
   ```
 
 - Look up the Gitea username
