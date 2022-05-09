@@ -216,7 +216,7 @@ The rest of these directions will talk about accessing one or more of the instal
   - Select "Create Repository"
   - Select the clipboard icon to copy the HTTPS clone URL
   - Save that URL but don't use it yet
-- Clone the upstream repository for the demo app, and navigate to the source code
+- Clone the upstream repository for the demo app, and navigate to the source code.  Make sure you are in the `1-demo` directory.
 
   ```shell
   git clone https://github.com/ploigos-automated-governance/reference-quarkus-mvn.git
@@ -250,11 +250,11 @@ The rest of these directions will talk about accessing one or more of the instal
   -  - Update the *Default Branch* to `main`
   - Select the clipboard icon to copy the HTTPS clone URL
   - Save that URL but don't use it yet
-- Clone the upstream gitops repository for the demo app
+- Clone the upstream ops repository for the demo app.  Make sure you are in the `1-demo` directory.
 
   ```shell
   git clone https://github.com/ploigos-automated-governance/reference-quarkus-mvn-ops.git
-  cd reference-quarkus-mvn-cloud-resources_tekton_workflow-everything
+  cd reference-quarkus-mvn-ops
   ```
 
 - Change the "origin" remote of the local git repo you just cloned to point at the Gitea URL you (hopefully) saved.
