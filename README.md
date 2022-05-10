@@ -93,6 +93,9 @@ There are some baked in assupmtions with this install.  They are as follows:
 
 Let's install and configure the software factory!  We are using a kustomize application to simplify this process.
 
+**IMPORTANT**
+Our root directory, unless otherwise stated in the directions, will be the `1-demo` directory.  Many of these directions assume you are in the `1-demo` directory.  If not stated otherwise, make sure to run commands from the `1-demo` directory.
+
 **1 . Clone the Ploigos Automated Governance Platform repository.**
 
 ```shell
