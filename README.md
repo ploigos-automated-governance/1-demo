@@ -31,6 +31,8 @@ You can use [OpenShift Local](https://developers.redhat.com/products/openshift-l
 
 1 . Ensure you have an OpenShift 4.x cluster running and accessible to you.
 
+- **IMPORTANT** - This cluster must be using and generating certificates form a trusted CA.  If it does not, you will not get full functionality of the demo. It will break in spots where tools will not accept untrusted certs.
+
 2 . Log into your cluster `oc` cli.  You'll need a terminal and web browser to complete this task.
 
   - Access the OpenShift web console.
