@@ -164,7 +164,7 @@ Now that everything is installed and you can access the tools, continue to the n
 
 **Quck Check**
 
-Makes sure you are in the `devsecops` project (namespace) before continuing!
+Makes sure you are in the `devsecops` project (namespace), and the `2-platform` directory before continuing!
 
 Once you valided you are in the devsecops project, run the following command to set up the SigStore components:
 
