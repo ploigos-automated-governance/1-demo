@@ -172,9 +172,9 @@ Once you valided you are in the devsecops project, run the following command to 
 oc apply -f argo-cd-apps/app-of-apps/simple-software-supply-chain-platform.yml
 ```
 
-Installing Rekor should talk about 3 - 5 minutes.  You can validate Rekor is up-and-running by navigating to the `Routes` within the `sigstore` namespace.  Follow the same directions that were provided in step 1, although use the `sigstore` namespace.
+Installing Rekor should talk about 3 - 5 minutes.  You can validate Rekor is up-and-running by navigating to you ArgoCD web interafce.  You'll see three boxes.  When all three are green, you have completly installed Rekor..
 
-Click on the `rekor-server-route` Location, and you'll get a simple website with the heading `Rekor Server`.
+Navigate to your `Routes` in the sigstore namespace.  Click on the `rekor-server-route` Location, and you'll get a simple website with the heading `Rekor Server`.  That's it, next steps!
 
 **4 . Resize the Nexus PVC**
 
