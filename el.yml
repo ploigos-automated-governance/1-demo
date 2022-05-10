@@ -4,7 +4,7 @@ metadata:
   name: everything-pipeline
   namespace: devsecops
 spec:
-  serviceAccountName: el-ploigos-workflow-app1-service1
+  serviceAccountName: pipeline
   triggers:
   - bindings:
     - kind: ClusterTriggerBinding
