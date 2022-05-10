@@ -130,32 +130,26 @@ Why did this happen?
 
 There is a `PloigosPlatform` custom resource that is invoked as part of the kustomize app.  This `PloigosPlatform` resource depends upon the sofware factory operator being completly registered.  It may happen that the operator has not registered the customer resource definitions by the time the `PloigosPlatform` resource is invoked.
 
-**NOTE**
+**Now, We Wait**
+
 This begins the 5 - 10 minutes to installation process.  If the network connection is slower than normal, this could take upwards of 15 minutes.
 
-To validate the platform has been set up properly, you can do any of these two actions:
+To validate the platform has been set up properly, do the following.
 
   - Within the `devsecops` project, access the logs of the pod named: ```
 ploigos-operator-controller-manager-[random-characters-here]```. If complete, the logs will be done generating, and you'll see a meassage like this:
   
   ![Picture of logs for completed Ploigos Platforom install](assets/ploigos-softwrare-factory-platform-complete-screen.png)
 
-  - Within the project `devsecops`, navigate the `Routes` by finding the `Networking` selection on the side nav menu.  Click the `Networking` selection, then in the networking submenu select `Routes`.  With the exception of `nexus-docker`, you should be able to access each web interface.
-
 Once you have validated all software factory componenets are up and running, being the next step.
 
 **3 . Install the SigStore components, Rekor.**
 
-**IMPORTANT
+**Quck Check**
 
-Unless otherwise stated, from here on out, make sure you are in the `devsecops` project (namespace) which was created when installing the software factory.  To do this, use the following command:
+Makes sure you are in the `devsecops` project (namespace) before continuing!
 
-```shell
-oc project devsecops
-```
-
-You will recieve a response that you are int he devsecops project. Once you recieve that response, run the following command to set up the SigStore components.
-
+Once you valided you are in the devsecops project, run the following command to set up the SigStore components:
 
 ```shell
 oc apply -f argo-cd-apps/app-of-apps/simple-software-supply-chain-platform.yml
