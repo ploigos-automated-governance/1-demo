@@ -113,13 +113,22 @@ oc delete limitrange --all -n sigstore
 The first command is invoking the install.  The second two commands, `oc delete limitrange ...` are there as a precaution.  Some OpenShift configurations will set compute, storage, and memory limits on newly created namespaces.  For this demo, we are going to remove those limits.
 
 **Get An Error?**
-If you recieved an error about the `PloigosPlatform` not being found, simply re-invoke the folllowing command:
+
+If you recieved an error about the `PloigosPlatform` not being found, if may look like this:
+
+```shell
+error: unable to recognize "argo-cd-apps/base/ploigos-software-factory/": no matches for kind "PloigosPlatform" in version "redhatgov.io/v1alpha1"
+```
+
+Simply wait 2 - 3 minutes re-invoke the folllowing command:
 
 ```shell
 oc apply -k argo-cd-apps/base/ploigos-software-factory
 ```  
 
-Why did this happen? There is a `PloigosPlatform` custom resource that is invoked as part of the kustomize app.  This `PloigosPlatform` resoruce depends upon the sofware factory operator being completly registered.  It may happen that the operator has not registered the customer resource definitions by the time the `PloigosPlatform` resource is invoked.
+Why did this happen? 
+
+There is a `PloigosPlatform` custom resource that is invoked as part of the kustomize app.  This `PloigosPlatform` resource depends upon the sofware factory operator being completly registered.  It may happen that the operator has not registered the customer resource definitions by the time the `PloigosPlatform` resource is invoked.
 
 **NOTE**
 This begins the 5 - 10 minutes to installation process.  If the network connection is slower than normal, this could take upwards of 15 minutes.
