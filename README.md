@@ -68,6 +68,8 @@ You can use [OpenShift Local](https://developers.redhat.com/products/openshift-l
 
 Once cloned, navigate into the cloned project directory.  We will begin our installation from the cloned project directory.
 
+## Installing the Demo
+
 ### First, Install the automated governance tools & system
 
 #### What To Exepct From This First Step
