@@ -137,6 +137,17 @@ Once you have validated all software factory componenets are up and running, bei
 
 **3 . Install the SigStore components, Rekor.**
 
+**IMPORTANT
+
+Unless otherwise stated, from here on out, make sure you are in the `devsecops` project (namespace) which was created when installing the software factory.  To do this, use the following command:
+
+```shell
+oc project devsecops
+```
+
+You will recieve a response that you are int he devsecops project. Once you recieve that response, run the following command to set up the SigStore components.
+
+
 ```shell
 oc apply -f argo-cd-apps/app-of-apps/simple-software-supply-chain-platform.yml
 ```
