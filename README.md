@@ -141,7 +141,24 @@ ploigos-operator-controller-manager-[random-characters-here]```. If complete, th
   
   ![Picture of logs for completed Ploigos Platforom install](assets/ploigos-softwrare-factory-platform-complete-screen.png)
 
-Once you have validated all software factory componenets are up and running, being the next step.
+**Once Installed**
+
+Now that you have validated the installation, let's obtain our username and password that we'll use for the rest of this demo for the software factory tooling.
+
+When we initially setup the software factory platform, a random password was generated for each tool, and then associated with the username *ploigos*.  To get the password, use the following command:
+
+  ```shell
+  oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo 
+  ```
+
+Save this password somewhere for quick copy and paste.  We recommned creating a text file names *pw* in your `1-demo` directory, then pasting your credentials in there.
+
+
+Let's valdiate your tool access now. To access the tool, simply navigate to the `Routes` information by using the left-sided navigation of the OpenShift web console. Click on `Networking`, the select `Routes`. You'll see all your routes for the namespace you are curently in.  To see all the software factory tooling routes, make sure you are in the `devsecops` namespace.
+
+Click on the location for `gitea` and `argocd-server`.  Make sure you can log into those.
+
+Now that everything is installed and you can access the tools, continue to the next steps!
 
 **3 . Install the SigStore components, Rekor.**
 
@@ -214,24 +231,8 @@ We are now ready for the second step.
 
 ### Second, Fork & Configure the Demo Application
 
-Before we start on this step, let's get some critical information first.  
-
-#### Our Software Factory Username and Password
-
-The first critical info is our username and password.
-
-When we initially setup the software factory platform, a random password was generated for each tool, and then associated with the username *ploigos*.  To get the password, use the following command:
-
-  ```shell
-  oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo 
-  ```
-  
- Sace this password somewhere for quick copy and paste.
+Make sure your service account password and username are on hand, you'll need this for this.
  
- #### Our Routes for Software Factory tools & services
- 
-The rest of these directions will talk about accessing one or more of the installed tools.  To access the tool, simply navigate to the `Routes` information by using the left-sided navigation. Click on `Networking`, the select `Routes`. You'll see all your routes for the namespace you are curently in.  To see all the software factory tooling routes, make sure you are in the `devsecops` namespace.  To see all the tooling for the software supply chain platform, make sure you are in the `sigstore` namespace. 
-
 **1 . Fork the application code repository demo application**
 
 - Log into Gitea using your username and password.
