@@ -49,7 +49,7 @@ You can use [OpenShift Local](https://developers.redhat.com/products/openshift-l
   ```
 
   - Copy the full `oc login --token= ...` command from your web browser, and paste it into your termainal. Invoke the command in your terminal and follow the directions.  DO NOT COPY AND PAST THE SAMPLE OC LOGIN COMMAND, IT WILL NOT WORK.
-  - Validate you're logged in by invoking the commaned `oc get status`.  The terminal will output information. The first line will say `In project default on server ...`.  
+  - Validate you're logged in by invoking the commaned `oc status`.  The terminal will output information. The first line will say `In project default on server ...`.  
   - You are succesfully logged in if the response has the exact server used in the oc login command.
 
 2 . Clone this repository.  We will mutate, and add files as part of the demo.  Either clone via SSH or HTTPS.
