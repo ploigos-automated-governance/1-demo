@@ -168,7 +168,7 @@ Now that everything is installed and you can access the tools, continue to the n
 
 **Quick Check**
 
-Make sure you are in the `devsecops` project (namespace), and the `2-platform` directory before continuing!
+Make sure you are in the `devsecops` project (namespace), and the `2-platform-ops` directory before continuing!
 
 Once you have validated you are in the devsecops project, run the following command to set up the SigStore components:
 
