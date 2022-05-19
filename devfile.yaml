@@ -5,7 +5,7 @@ projects:
   - name: automated-governance-demo-repo
     source:
       type: git
-      location: https://github.com/ploigos-automated-governance/1-demo.git
+      location: 'https://github.com/ploigos-automated-governance/1-demo.git'
 components:
   - alias: automated-governance-terminal-tooling
     type: dockerimage
