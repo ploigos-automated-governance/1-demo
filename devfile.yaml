@@ -2,12 +2,12 @@ apiVersion: 1.0.0
 metadata:
   name: ploigos-automated-governance-demo
 projects:
-  - name: autogov-demo
+  - name: automated-governance-demo-repo
     source:
       type: git
       location: https://github.com/ploigos-automated-governance/1-demo.git
 components:
-  - alias: autogov-terminal-demo
+  - alias: automated-governance-terminal-tooling
     type: dockerimage
     image: quay.io/akesterton/compliance-dev:latest
     memoryLimit: 1Gi
