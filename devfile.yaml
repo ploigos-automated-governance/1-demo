@@ -2,7 +2,7 @@ apiVersion: 1.0.0
 metadata:
   name: ploigos-automated-governance-demo
 projects:
-  - name: automated-governance-demo-repo
+  - name: 1-demo
     source:
       type: git
       location: 'https://github.com/ploigos-automated-governance/1-demo.git'
