@@ -10,4 +10,4 @@ components:
   - alias: automated-governance-terminal-tooling
     type: dockerimage
     image: 'quay.io/akesterton/compliance-dev:latest'
-    memoryLimit: 5Gi
+    memoryLimit: 1Gi
