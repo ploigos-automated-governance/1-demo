@@ -13,10 +13,13 @@ There are four (4) large tasks to setup and run the demo:
 
 ## Before You Start
 
-Make sure the following components are installed on your local machine:
+Make sure the following components are installed on your local machine, or as part the environment you are working on.
 
-- [OpenShift cli](https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html) - Create applications and manage OpenShift Container Platform projects from a terminal.
+- [git](https://git-scm.com/) - A free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
 - [yq cli](https://github.com/mikefarah/yq) - A lightweight and portable command-line YAML, JSON and XML processor.
+- [OpenShift cli](https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html) - Create applications and manage OpenShift Container Platform projects from a terminal.
+- [helm](https://helm.sh/docs/intro/install/) - Helm helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application.
+
 
 This demo assumes your kubernetes distribution is OpenShift 4.x, and you have cluster administrator rights.  If you do not have an OpenShift cluster with these rights, we recommend a cluster from one of the Red Hat cloud partners.  
 
