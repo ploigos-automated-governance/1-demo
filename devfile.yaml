@@ -3,12 +3,11 @@ metadata:
   name: ploigos-automated-governance-devfile
 projects:
   - name: autogov-demo
-    git:
-      remotes:
-        origin: https://github.com/ploigos-automated-governance/1-demo.git
-      checkoutFrom:
-        revision: main
+    source:
+      type: git
+      location: https://github.com/ploigos-automated-governance/1-demo.git
 components:
   - alias: autogov-terminal-demo
     type: dockerimage
     image: quay.io/akesterton/compliance-dev:latest
+    memoryLimit: 1Gi
