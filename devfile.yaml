@@ -1,6 +1,6 @@
 apiVersion: 1.0.0
 metadata:
-  name: ploigos-automated-governance-devfile
+  name: ploigos-automated-governance-demo
 projects:
   - name: autogov-demo
     source:
