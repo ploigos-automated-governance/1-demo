@@ -1,0 +1,16 @@
+---
+schemaVersion: 2.1.0
+metadata:
+  name: ploigos-automated-governance-devfile
+  version: 2.1.0
+projects:
+  - name: autogov-demo
+    git:
+      remotes:
+        origin: "https://github.com/ploigos-automated-governance/1-demo.git"
+      checkoutFrom:
+        revision: main
+components:
+  - alias: autogov-terminal-demo
+    type: dockerimage
+    image: quay.io/akesterton/compliance-dev:latest
