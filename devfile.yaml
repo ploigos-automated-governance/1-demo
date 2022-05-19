@@ -6,7 +6,7 @@ projects:
   - name: autogov-demo
     git:
       remotes:
-        origin: "https://github.com/ploigos-automated-governance/1-demo.git"
+        origin: https://github.com/ploigos-automated-governance/1-demo.git
       checkoutFrom:
         revision: main
 components:
