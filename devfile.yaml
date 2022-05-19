@@ -1,7 +1,6 @@
-schemaVersion: 2.1.0
+apiVersion: 1.0.0
 metadata:
   name: ploigos-automated-governance-devfile
-  version: 2.1.0
 projects:
   - name: autogov-demo
     git:
