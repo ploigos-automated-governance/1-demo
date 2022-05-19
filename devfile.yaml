@@ -11,3 +11,4 @@ components:
     type: dockerimage
     image: 'quay.io/akesterton/compliance-dev:latest'
     memoryLimit: 1Gi
+    mountSources: true
