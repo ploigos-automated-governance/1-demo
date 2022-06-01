@@ -5,8 +5,8 @@ This repository provides the means to stand up and experiment with automated gov
 There are four (4) large tasks to setup and run the demo:
 
 1. First    - Install all the automated governance tools & systems 
-  a. Ploigos Software Factory Opertor
-  b. `PloigosPlatform`
+    1. Ploigos Software Factory Operator
+    2. `PloigosPlatform`
 2. Second   - Install the Ploigos Pipeline, and the demo application
 3. Third    - Update the Ploigos Platform configuration
 4. Fourth   - Expose the Pipeline as a Service, and onboard the demo application
@@ -16,7 +16,7 @@ There are four (4) large tasks to setup and run the demo:
 Make sure the following components are installed on your local machine, or as part the environment you are working on.
 
 - [git](https://git-scm.com/) - A free and open source distributed version control system designed to handle everything from small to very large projects with speed and efficiency.
-- [yq cli](https://github.com/mikefarah/yq) - A lightweight and portable command-line YAML, JSON and XML processor.
+- [yq cli](https://github.com/mikefarah/yq) (version 4 or greater) - A lightweight and portable command-line YAML, JSON and XML processor.
 - [OpenShift cli](https://docs.openshift.com/container-platform/4.7/cli_reference/openshift_cli/getting-started-cli.html) - Create applications and manage OpenShift Container Platform projects from a terminal.
 - [helm](https://helm.sh/docs/intro/install/) - Helm helps you manage Kubernetes applications — Helm Charts help you define, install, and upgrade even the most complex Kubernetes application.
 
@@ -32,30 +32,31 @@ You can use [OpenShift Local](https://developers.redhat.com/products/openshift-l
 
 ## Setup Instructions
 
-1 . Ensure you have an OpenShift 4.x cluster running and accessible to you.
+1. Ensure you have an OpenShift 4.x cluster running and accessible to you.
 
 - **IMPORTANT** - This cluster must be using and generating certificates from a trusted CA.  If it does not, you will not get full functionality of the demo. It will break in spots where tools will not accept untrusted certs.
 
-2 . Log into your cluster `oc` cli.  You'll need a terminal and web browser to complete this task.
+2. Log into your cluster `oc` cli.  You'll need a terminal and web browser to complete this task.
 
   - Access the OpenShift web console.
-  - At the top right of the web console, you'll see your username, click it.  This will drop down a submenu with a couple options.
-  - Click the `Copy login command` option.  This will open a new webpage with the blue text of `Display Token` at the top left-hand side of the page.  
-  - Click on `Display Token`. Once clicked, the webpage will refresh with some information. 
+  - At the top right of the web console, you'll see your username, click it.  This will drop down a submenu with several options.
+  - Select the `Copy login command` option.
+  - A new tab will open. You may be prompted to re-enter your credentials. If so, enter the same credentials that use to access the OpenShift web console.
+  - You will be taken to a new webpage with the blue text of `Display Token` at the top left-hand side of the page. Click that text.
   - Find the header `Login with this token`
   - Under the header `Login with this token`, you will see a login command that beings with `oc login --token= ...`.  It will resemble a command such as this one:
 
-  *Sample OC Login Command*
+  *Example OC Login Command. DO NOT COPY AND PASTE THIS.*
 
   ```shell
   oc login --token=sha256~12dHbGNWjMhnuJ7-qhx9tAMnjrJaRpfdswo2HoXUy8_0 --server=https://api.ci-ln-1ldd90k-72292.aws.dev.cloud.com:6443
   ```
 
-  - Copy the full `oc login --token= ...` command from your web browser, and paste it into your termainal. Invoke the command in your terminal and follow the directions.  DO NOT COPY AND PAST THE SAMPLE OC LOGIN COMMAND, IT WILL NOT WORK.
+  - Copy the full `oc login --token= ...` command from your web browser, and paste it into your termainal. Invoke the command in your terminal and follow the directions.  DO NOT COPY AND PASTE THE EXAMPLE OC LOGIN COMMAND FROM THIS README. IT WILL NOT WORK.
   - Validate you're logged in by invoking the commaned `oc status`.  The terminal will output information. The first line will say `In project default on server ...`.  
   - You are succesfully logged in if the response has the exact server used in the oc login command.
 
-2 . Clone this repository.  We will mutate, and add files as part of the demo.  Either clone via SSH or HTTPS.
+3. Clone this repository.  We will change and add files as part of the demo.  Either clone via SSH or HTTPS.
 
 - Clone with SSH remote:
 
@@ -75,21 +76,21 @@ Once cloned, navigate into the cloned project directory.  We will begin our inst
 
 ### First, Install the automated governance tools & system
 
-#### What To Exepct From This First Step
+#### What To Expect From This First Step
 
-This step gets you up and running with all tooling and systems you need. You'll have done the following when complete with section.
+This step gets you up and running with all tooling and systems you need. You'll have done the following when you finish this step.
 
-- Installation and basic configuration for the following tools in the `devsecops` namespace:
-  - Gitea - Source Code Repo
+- Installation and basic configuration of the following tools in the `devsecops` namespace:
+  - Gitea - Source Code Repository
   - OpenShift Pipelines (Tekton) - Continuous Integration
   - OpenShift GitOps (ArgoCD) - Continuous Deployment
   - Nexus - Artifact Repository & Container Registry
   - SonarQube - Static Code Analysis
   - Selenium - User Acceptance Testing
-- Installation and basic configuration for the following tools in the `sigstore` namespace:
+- Installation and basic configuration of the following tools in the `sigstore` namespace:
   - Rekor - Transparency Log
 
-There are some baked in assupmtions with this install.  They are as follows:
+There are some baked in assumptions with this install.  They are as follows:
 
 - The kubernetes distribution is OpenShift 4.x
 - You are not already using the namespaces
@@ -98,7 +99,7 @@ There are some baked in assupmtions with this install.  They are as follows:
 
 #### Let's Get Started!
 
-Let's install and configure the software factory!  We are using a kustomize application to simplify this process.
+Let's install and configure the software factory!  We are using [Kustomize](https://kubectl.docs.kubernetes.io/guides/introduction/kustomize/#1-make-a-kustomization-file) to simplify this process.
 
 **IMPORTANT**
 Our root directory, unless otherwise stated in the directions, will be the `1-demo` directory.  Many of these directions assume you are in the `1-demo` directory.  If not stated otherwise, make sure to run commands from the `1-demo` directory.
@@ -117,7 +118,7 @@ oc delete limitrange --all -n devsecops
 oc delete limitrange --all -n sigstore
 ```
 
-The first command is invoking the install.  The second two commands, `oc delete limitrange ...` are there as a precaution.  Some OpenShift configurations will set compute, storage, and memory limits on newly created namespaces.  For this demo, we are going to remove those limits.
+The first command starts the installation.  The second two commands, `oc delete limitrange ...` are there as a precaution.  Some OpenShift configurations will set compute, storage, and memory limits on newly created namespaces.  For this demo, we are going to remove those limits.
 
 **Get An Error?**
 
@@ -127,19 +128,19 @@ If you received an error about the `PloigosPlatform` not being found, it may loo
 error: unable to recognize "argo-cd-apps/base/ploigos-software-factory/": no matches for kind "PloigosPlatform" in version "redhatgov.io/v1alpha1"
 ```
 
-Simply wait 2 - 3 minutes re-invoke the following command:
+Simply wait 2 - 3 minutes and then re-invoke the following command:
 
 ```shell
-oc apply -k argo-cd-apps/base/ploigos-software-factory
+oc apply -k argo-cd-apps/base/ploigos-software-factory/
 ```  
 
 Why did this happen?
 
-There is a `PloigosPlatform` custom resource that is invoked as part of the kustomize app.  This `PloigosPlatform` resource depends upon the sofware factory operator being completely registered.  It may happen that the operator has not registered the customer resource definitions by the time the `PloigosPlatform` resource is invoked.
+The `oc create` command creates a `PloigosPlatform` custom resource.  This `PloigosPlatform` resource depends upon the sofware factory operator being completely registered.  It may happen that the operator has not registered the customer resource definitions by the time the `PloigosPlatform` resource is created.
 
 **Now, We Wait**
 
-This begins the 5 - 10 minutes to installation process.  If the network connection is slower than normal, this could take upwards of 15 minutes.
+This begins the 5 - 10 minute installation process.  If the network connection is slower than normal, this could take upwards of 15 minutes.
 
 To validate the platform has been set up properly, do the following.
 
@@ -169,9 +170,12 @@ Now that everything is installed and you can access the tools, continue to the n
 
 **3 . Install the SigStore components, Rekor.**
 
-**Quick Check**
+**Quick Check** - Make sure you are in the `2-platform-ops` directory before continuing!
 
-Make sure you are in the `devsecops` project (namespace), and the `2-platform-ops` directory before continuing!
+Use the `oc` command to switch too the `devsecops` project.
+```shell
+oc project devsecops
+```
 
 Once you have validated you are in the devsecops project, run the following command to set up the SigStore components:
 
@@ -179,7 +183,13 @@ Once you have validated you are in the devsecops project, run the following comm
 oc apply -f argo-cd-apps/app-of-apps/simple-software-supply-chain-platform.yml
 ```
 
-Installing Rekor should take about 3 - 5 minutes.  You can validate Rekor is up-and-running by navigating to you ArgoCD web interface.  You'll see three boxes.  When all three are green, you have completely installed Rekor.
+Installing Rekor should take about 3 - 5 minutes.
+
+You can open the ArgoCD web interface to validate that Rekor is up-and-running. Make sure to use the ArgoCD instance that was created in the `devsecops` namespace. Navigate to your `Routes` in the devsecops namespace and click on the `argocd-server` Location.
+
+Use the username `ploigos` and the generated password that you previously retrieved from the secret.
+
+You'll see three boxes.  When all three are green, you have completely installed Rekor.
 
 Navigate to your `Routes` in the sigstore namespace.  Click on the `rekor-server-route` Location, and you'll get a simple website with the heading `Rekor Server`.  That's it, next steps!
 
@@ -196,30 +206,28 @@ Using the OpenShift web console, within the `devsecops` namespace:
 - Within `Actions`, select `Expand PVC`
 - Update to 100 GiB
 - Select "Expand"
-- Once complete, restart the nexus pod.  Still within the `devsecops` project, use the left hand navigfation to go to `Workloads` -> `Pods`
+- Once complete, restart the nexus pod.  Still within the `devsecops` project, use the left hand navigation to go to `Workloads` -> `Pods`
 - Find the pod that starts with  "nexus-sonatype-nexus-..." 
 - Click the 3 dots next to the pod, then select "Delete Pod"
 - When prompted, select "Delete"
 
 The pod will be deleted, then a new one will be created.  With the creation of this new pod, the PVC expansion will be registered.
 
-**5 . Install the everything pipeline using helm**
+**5 . Install the everything pipeline using Helm**
 
 **IMPORTANT**
 
-Makes sure to set your project context as `devsecops`, and the `1-demo` directory to do this.  Once validated, enter the following commands:
+Make sure you are in the `1-demo` directory to do this.  Once validated, enter the following commands:
 
 ```shell
-git clone https://github.com/ploigos/ploigos-charts.git
-cp values.yaml ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
-pushd ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
-helm install -f values.yaml everything-pipeline .
-popd
+oc project devsecops
+helm repo add ploigos https://ploigos.github.io/ploigos-charts/
+helm install -f values.yaml everything-pipeline ploigos/ploigos-workflow-tekton-pipeline-everything
 ```
 
 **6 . Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).**
 
-As with the previous step, make sure you are in then `1-demo` directory before excuting these commands.
+As with the previous step, make sure you are in the `1-demo` directory before excuting these commands.
 
 ```shell
 oc create -f el.yml
@@ -231,11 +239,15 @@ We are now ready for the second step.
 
 ### Second, Fork & Configure the Demo Application
 
-Make sure your service account password and username are on hand, you'll need those for this.
+Make sure your generated service account password is on hand, You'll need it for this.
  
 **1 . Fork the application code repository demo application**
 
 - Log into Gitea using your username and password.
+  - Navigate to your `Routes` in the devsecops namespace and click on the `gitea` Location.
+  - Select 'Sign In`
+  - Username: `ploigos`
+  - Password: The generated password you previously retrieved.
 - Create a new repository for the demo app in the "platform" organization
   - Organization (small tab on the right side of the screen) -> platform -> New Repository
   - Repository Name: `reference-quarkus-mvn`
@@ -257,7 +269,7 @@ Make sure your service account password and username are on hand, you'll need th
   git config http.sslVerify false
   ```
 
-- Push the upstream code to the new repo that you created in Gitea.  Use the username and password from above when prompted for credentials.  After a successful push, naviagate back to the project root directory.
+- Push the upstream code to the new repo that you created in Gitea.  Use the username and password from above when prompted for credentials.  After a successful push, navigate back to the project root directory.
 
   ```shell
   git push
@@ -274,8 +286,8 @@ Make sure your service account password and username are on hand, you'll need th
     - **NOTE:** you have to either 
       - a) use this exact name for the repo, or 
       - b) update the file located at `cicd/ploigos-software-factory-operator/ploigos-step-runner-config/config.yml` in your fork of the app source code repository with whatever name you want to use.
-  - Select "Create Repository"
   -  - Update the *Default Branch* to `main`
+  - Select "Create Repository"
   - Select the clipboard icon to copy the HTTPS clone URL
   - Save that URL but don't use it yet
 - Clone the upstream ops repository for the demo app.  Make sure you are in the `1-demo` directory.
@@ -292,7 +304,7 @@ Make sure your service account password and username are on hand, you'll need th
   git config http.sslVerify false
   ```
 
-- Push the upstream code to the new repo that you created in Gitea.  Use the username and password from above when prompted for credentials.  After a successful push, naviagate back to the project root directory.
+- Push the upstream code to the new repo that you created in Gitea.  Use the username and password from above when prompted for credentials.  After a successful push, navigate back to the project root directory.
 
   ```shell
   git push
@@ -321,20 +333,20 @@ oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq '.data[]' > conf
 
 **2 . Update `config.yml`**
 
-- Open the `config.yml` you just exported to your local machine.
-- Add the contents from the `config-additions.yml` to the bottom of the `config.yml`
-- Make sure to preserve the indentation (2 spaces) when copying.
-- Save `config.yml`, and keep the file open.
+This command appends additional configuration to the end of config.yml. The two `>>` symbols are important.
+
+```shell
+cat config-additions.yml >> config.yml
+```
 
 **3 . Updating values in the `config.yml`**
 
- - Replace `REKOR_SERVER_URL` with the output of:
+ - Replace `REKOR_SERVER_URL` with the URL for your Rekor installation.
    
  ```shell
- echo "https://$(oc get route rekor-server-route -n sigstore -o yaml | yq '.status.ingress[].host')/"
+ NEW_REKOR_SERVER_URL=$(echo "https://$(oc get route rekor-server-route -n sigstore -o yaml | yq '.status.ingress[].host')/")
+ sed -i "s,REKOR_SERVER_URL,${NEW_REKOR_SERVER_URL}," config.yml
  ```
-
- - Save `config.yml`
 
 #### Modify Default config-secrets.yml
 
@@ -348,13 +360,15 @@ oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq '.data[]' | base6
 
 **2 .Update `config-secrets.yml`**
 
- - Open the `config-secrets.yml` you just exported to your local machine.
- - Add the contents from the `config-secrets-additions.yml` to the bottom of the `config-secrets.yml`
- - Make sure to preserve the indentation (2 spaces) when copying.
- - Save `config-secrets.yml`, and keep the file open.
+This command appends additional configuration to the end of config-secrets.yml. The two `>>` symbols are important.
+
+```shell
+cat config-secrets-additions.yml >> config-secrets.yml
+```
 
 **3 . Updating values in the `config-secrets.yml`**
 
+- Edit config-secrets.yml
 - Replace `EVIDENCE_DESTINATION_PASSWORD` with the value of `results-archive-destination-password`. This value should be on the last line of the file before you added the generate-evidence snippet.
 - Save `config-secrets.yml`.
 
@@ -378,18 +392,25 @@ oc create secret generic ploigos-platform-config-secrets-demo --from-file config
 
 **2. Test the pipeline with the new configuration.**
 
+This command manually starts the pipeline for the forked demo application. After onboarding, the pipeline will start automatically when the source code changes.
+
 ```shell
 oc create -f everything-pipelinerun.yml 
 ```
+
+View the pipeline in the OpenShift web console.
+- In the OpenShift web UI you should see a running pipeline
+- In the left navigation menu, Pipelines -> Pipelines
+- The pipeline should finish successfully. This may take 15+ minutes.
 
 ### Fourth, Onboard the Demo Application
 
 20 . Create webhook in gitea for demo app.
 
-- In the the Gitea web open the *app source code* repo named reference-quarkus-mvn. (Not the -ops repo.)
+- In the the Gitea web interface, open the *app source code* repo named reference-quarkus-mvn. (Not the -ops repo.)
 - The URL should be something like `https://[your-gitea-cluster-url]/platform/reference-quarkus-mvn`
 - Settings (top right) -> Webhooks -> Add Webhook -> Gitea
-- Target URL - Enter the URL for the Route you just created for the EventListener. You can get it with:
+- Target URL - Enter the URL for the Route you of the Tekton EventListener. You can get it with:
 
   ```shell
   echo "http://$(oc get route el-everything-pipeline -o yaml | yq .status.ingress[].host)/"
@@ -397,7 +418,7 @@ oc create -f everything-pipelinerun.yml
 
 - Select "Add Webhook"
 
-21 . Test the webhook by editing the source code in the Gitea UI.
+21 . Test the webhook by editing the source code of the demo app in the Gitea UI.
 
 - In the Gitea UI browse to the reference-quarkus-mvn project
 - Select "README.md"
@@ -406,8 +427,8 @@ oc create -f everything-pipelinerun.yml
 - Select "Create a new branch ..." (scroll down)
 - Name the branch `feature/demo`
 - Select "Propose file change"
-- In the OpenShift web UI you should see a running pipeline
-  - Pipelines (tab in the left navigation) -> Pipelines
+- In the OpenShift web UI you should see another running pipeline
+  - In the left navigation menu, Pipelines -> Pipelines
 - The pipeline should finish successfully. This may take 15+ minutes.
 
 22 . Edit the yaml for the app1-service Pipeline. Under `tasks:`, for the task named ci-push-container-image-to-repository, in the `taskRef:` field, change name to ci-push-container-image-to-repository.
