@@ -5,8 +5,8 @@ This repository provides the means to stand up and experiment with automated gov
 There are four (4) large tasks to setup and run the demo:
 
 1. First    - Install all the automated governance tools & systems 
-  a. Ploigos Software Factory Opertor
-  b. `PloigosPlatform`
+    1. Ploigos Software Factory Operator
+    2. `PloigosPlatform`
 2. Second   - Install the Ploigos Pipeline, and the demo application
 3. Third    - Update the Ploigos Platform configuration
 4. Fourth   - Expose the Pipeline as a Service, and onboard the demo application
@@ -32,16 +32,17 @@ You can use [OpenShift Local](https://developers.redhat.com/products/openshift-l
 
 ## Setup Instructions
 
-1 . Ensure you have an OpenShift 4.x cluster running and accessible to you.
+1. Ensure you have an OpenShift 4.x cluster running and accessible to you.
 
 - **IMPORTANT** - This cluster must be using and generating certificates from a trusted CA.  If it does not, you will not get full functionality of the demo. It will break in spots where tools will not accept untrusted certs.
 
-2 . Log into your cluster `oc` cli.  You'll need a terminal and web browser to complete this task.
+2. Log into your cluster `oc` cli.  You'll need a terminal and web browser to complete this task.
 
   - Access the OpenShift web console.
-  - At the top right of the web console, you'll see your username, click it.  This will drop down a submenu with a couple options.
-  - Click the `Copy login command` option.  This will open a new webpage with the blue text of `Display Token` at the top left-hand side of the page.  
-  - Click on `Display Token`. Once clicked, the webpage will refresh with some information. 
+  - At the top right of the web console, you'll see your username, click it.  This will drop down a submenu with several options.
+  - Select the `Copy login command` option.
+  - A new tab will open. You may be prompted to re-enter your credentials. If so, enter the same credentials that use to access the OpenShift web console.
+  - You will be taken to a new webpage with the blue text of `Display Token` at the top left-hand side of the page. Click that text.
   - Find the header `Login with this token`
   - Under the header `Login with this token`, you will see a login command that beings with `oc login --token= ...`.  It will resemble a command such as this one:
 
@@ -51,11 +52,11 @@ You can use [OpenShift Local](https://developers.redhat.com/products/openshift-l
   oc login --token=sha256~12dHbGNWjMhnuJ7-qhx9tAMnjrJaRpfdswo2HoXUy8_0 --server=https://api.ci-ln-1ldd90k-72292.aws.dev.cloud.com:6443
   ```
 
-  - Copy the full `oc login --token= ...` command from your web browser, and paste it into your termainal. Invoke the command in your terminal and follow the directions.  DO NOT COPY AND PAST THE SAMPLE OC LOGIN COMMAND, IT WILL NOT WORK.
+  - Copy the full `oc login --token= ...` command from your web browser, and paste it into your termainal. Invoke the command in your terminal and follow the directions.  DO NOT COPY AND PASTE THE SAMPLE OC LOGIN COMMAND, IT WILL NOT WORK.
   - Validate you're logged in by invoking the commaned `oc status`.  The terminal will output information. The first line will say `In project default on server ...`.  
   - You are succesfully logged in if the response has the exact server used in the oc login command.
 
-2 . Clone this repository.  We will mutate, and add files as part of the demo.  Either clone via SSH or HTTPS.
+3. Clone this repository.  We will change and add files as part of the demo.  Either clone via SSH or HTTPS.
 
 - Clone with SSH remote:
 
