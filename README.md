@@ -221,8 +221,8 @@ Make sure you are in the `1-demo` directory to do this.  Once validated, enter t
 
 ```shell
 oc project devsecops
-helm repo add ploigos https://ploigos.github.io/ploigos-charts/
-helm install -f values.yaml everything-pipeline ploigos/ploigos-workflow-tekton-pipeline-everything
+git clone https://github.com/ploigos/ploigos-charts.git
+helm install -f values.yaml everything-pipeline ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
 ```
 
 **6 . Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).**
