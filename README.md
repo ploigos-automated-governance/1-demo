@@ -313,7 +313,7 @@ Make sure your generated service account password is on hand, You'll need it for
 
 ### Third, Update the Ploigos Software Factory Platform Configuration
 
-When we installed the softwre factory, a set of default configuration (config.yml) and configuration secrets (config-secrets.yml) were created for us.  We need to modify them for this demo.
+When we installed the software factory, a set of default configuration (config.yml) and configuration secrets (config-secrets.yml) were created for us.  We need to modify them for this demo.
 
 In this section we do three things:
 
