@@ -262,7 +262,7 @@ View the pipeline in the OpenShift web console.
 
 ### Fourth, Onboard the Demo Application
 
-20 . Create webhook in gitea for demo app.
+1. Create webhook in gitea for demo app.
 
 - In the the Gitea web interface, open the *app source code* repo named reference-quarkus-mvn. (Not the -ops repo.)
 - The URL should be something like `https://[your-gitea-cluster-url]/platform/reference-quarkus-mvn`
@@ -275,7 +275,7 @@ View the pipeline in the OpenShift web console.
 
 - Select "Add Webhook"
 
-21 . Test the webhook by editing the source code of the demo app in the Gitea UI.
+2. Test the webhook by editing the source code of the demo app in the Gitea UI.
 
 - In the Gitea UI browse to the reference-quarkus-mvn project
 - Select "README.md"
@@ -288,9 +288,9 @@ View the pipeline in the OpenShift web console.
   - In the left navigation menu, Pipelines -> Pipelines
 - The pipeline should finish successfully. This may take 15+ minutes.
 
-22 . Edit the yaml for the app1-service Pipeline. Under `tasks:`, for the task named ci-push-container-image-to-repository, in the `taskRef:` field, change name to ci-push-container-image-to-repository.
+##  GitLab setup instructions
 
-23 .  GitLab setup instructions
+These optional instructions configure GitLab for running CI/CD pipelines.
 
 - Look up gitlab root credentials
   - The username is "root"
