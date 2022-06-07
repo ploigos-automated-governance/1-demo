@@ -264,16 +264,11 @@ View the pipeline in the OpenShift web console.
 
 1. Create webhook in gitea for demo app.
 
-- In the the Gitea web interface, open the *app source code* repo named reference-quarkus-mvn. (Not the -ops repo.)
-- The URL should be something like `https://[your-gitea-cluster-url]/platform/reference-quarkus-mvn`
-- Settings (top right) -> Webhooks -> Add Webhook -> Gitea
-- Target URL - Enter the URL for the Route you of the Tekton EventListener. You can get it with:
+This script adds a Gitea webhook to the demo app repo that triggers the pipeline whenever the application source code changes.
 
-  ```shell
-  echo "http://$(oc get route el-everything-pipeline -o yaml | yq .status.ingress[].host)/"
-  ```
-
-- Select "Add Webhook"
+```shell
+./onboard-app.sh reference-quarkus-mvn
+```
 
 2. Test the webhook by editing the source code of the demo app in the Gitea UI.
 
