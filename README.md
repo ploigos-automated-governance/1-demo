@@ -197,19 +197,10 @@ Navigate to your `Routes` in the sigstore namespace.  Click on the `rekor-server
 
 The default storage size is not enough for continued use with this demo.  Therefore, we need to increase it from its current setting to 100 GiB.
 
-Using the OpenShift web console, within the `devsecops` namespace:
-
-- Use the left hand navigation to navigate to `Storage` -> `PersistentVolumeClaims`
-- Search for *nexus-sonatype-nexus-data*
-- Select the `nexus-sonatype-nexus-data` pvc
-- Once selected, you'll see information about the PVC.  At the top right-hand side of the web console you'll see an `Actions` dropdown option; select it
-- Within `Actions`, select `Expand PVC`
-- Update to 100 GiB
-- Select "Expand"
-- Once complete, restart the nexus pod.  Still within the `devsecops` project, use the left hand navigation to go to `Workloads` -> `Pods`
-- Find the pod that starts with  "nexus-sonatype-nexus-..." 
-- Click the 3 dots next to the pod, then select "Delete Pod"
-- When prompted, select "Delete"
+```shell
+oc patch pvc nexus-sonatype-nexus-data -p '{"spec":{"resources":{"requests":{"storage":"100Gi"}}}}' -n devsecops
+oc delete po -l app=sonatype-nexus -n devsecops
+```
 
 The pod will be deleted, then a new one will be created.  With the creation of this new pod, the PVC expansion will be registered.
 
