@@ -239,81 +239,12 @@ Now we will fork the demo application. These commands cause Gitea to clone the u
 
 ### Third, Update the Ploigos Software Factory Platform Configuration
 
-When we installed the software factory, a set of default configuration (config.yml) and configuration secrets (config-secrets.yml) were created for us.  We need to modify them for this demo.
+**1. Generate new configuration objects.**
 
-In this section we do three things:
-
--  Modify the default config.yml
--  Modify the default config-secrets.yml
--  Apply these newly modified config.yml and config-secrets.yml files to the cluster
-
-#### Modify Default config.yml
-
-Another reminder, make sure you are in the `1-demo` directory for these instructions.
-
-**1 . Export the current config.yml from the cluster to your local machine**
+When we installed the software factory, a set of default configuration objects were created for us.  We need to create new configuration objects with modified settings. Our pipeline will use these instead of the default objects. The script below downloads the existing ConfigMap and Secret that hold the default configuration, modifies them, and creates a new ConfigMap and Secret with the updated configuration.
 
 ```shell
-oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq '.data[]' > config.yml
-```
-
-**2 . Update `config.yml`**
-
-This command appends additional configuration to the end of config.yml. The two `>>` symbols are important.
-
-```shell
-cat config-additions.yml >> config.yml
-```
-
-**3 . Updating values in the `config.yml`**
-
- - Replace `REKOR_SERVER_URL` with the URL for your Rekor installation.
-   
- ```shell
- NEW_REKOR_SERVER_URL=$(echo "https://$(oc get route rekor-server-route -n sigstore -o yaml | yq '.status.ingress[].host')/")
- sed -i "s,REKOR_SERVER_URL,${NEW_REKOR_SERVER_URL}," config.yml
- ```
-
-#### Modify Default config-secrets.yml
-
-Yet another reminder, make sure you are in the `1-demo` directory for these instructions.
-
-**1 . Export the current config-secrets.yml from the cluster to your local machine**
-
-```shell
-oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq '.data[]' | base64 -d > config-secrets.yml
-```
-
-**2 .Update `config-secrets.yml`**
-
-This command appends additional configuration to the end of config-secrets.yml. The two `>>` symbols are important.
-
-```shell
-cat config-secrets-additions.yml >> config-secrets.yml
-```
-
-**3 . Updating values in the `config-secrets.yml`**
-
-- Edit config-secrets.yml
-- Replace `EVIDENCE_DESTINATION_PASSWORD` with the value of `results-archive-destination-password`. This value should be on the last line of the file before you added the generate-evidence snippet.
-- Save `config-secrets.yml`.
-
-**4 . Update pgp private key for signing evidence**
-
-```shell
-PKEY=$(yq '.step-runner-config.sign-container-image[].config.container-image-signer-pgp-private-key' config-secrets.yml)
-yq -i ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" config-secrets.yml
-```
-
-#### Apply updates to the cluster
-
-**1 . Create a new ConfigMap and Secret**
-
-Using the updated config.yml and config-secrets.yml, we will update the Ploigos Platform configuration.
-
-```shell
-oc create cm ploigos-platform-config-demo --from-file=config.yml -n devsecops
-oc create secret generic ploigos-platform-config-secrets-demo --from-file config-secrets.yml -n devsecops
+./generate-config.sh
 ```
 
 **2. Test the pipeline with the new configuration.**
