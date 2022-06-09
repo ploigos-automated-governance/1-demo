@@ -1,3 +1,6 @@
+#!/bin/bash
+set -ex -o pipefail
+
 # Generate new configmap
 oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq '.data[]' > config.yml
 cat config-additions.yml >> config.yml

@@ -1,4 +1,4 @@
-#!/usr/bin/bash
+#!/bin/bash
 set -ex -o pipefail
 
 GITEA_USER=ploigos
