@@ -14,6 +14,7 @@ yq -i ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" c
 cat config-secrets-additions.yml >> config-secrets.yml
 yq -i e '.step-runner-config.generate-evidence[0].config.evidence-destination-password = .step-runner-config.report[0].config.results-archive-destination-password' config-secrets.yml
 
+# Fails if the cm or secret already exist. If you are sure you want to overwrite the cm/secret, delete them both before running this script.
 oc create cm ploigos-platform-config-demo --from-file=config.yml -n devsecops
 oc create secret generic ploigos-platform-config-secrets-demo --from-file config-secrets.yml -n devsecops
 
