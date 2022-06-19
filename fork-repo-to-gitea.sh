@@ -19,7 +19,7 @@ TOKEN=$(echo ${TOKEN_RESPONSE} | yq e .sha1)
 # Get the id of the Gitea organization that the new repo will belong to
 TARGET_ORG=platform
 ORG_ID=$( \
-  curl -k 'GET' \
+  curl -k -X 'GET' \
   "${GITEA_API_URL}/orgs/${TARGET_ORG}" \
   -H 'accept: application/json' \
   -H 'Content-Type: application/json' \
