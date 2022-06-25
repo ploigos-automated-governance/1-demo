@@ -1,0 +1,57 @@
+psrSecrets:
+  enabled: "true"
+  secretName: "psr-secrets"
+  secretKey: "psr-secrets"
+
+# PSR Config file (psr.yaml)
+psrConfig:
+  secretName: psr-config
+
+# Vault storage backend
+vaultStorage: "vault-backend"
+vaultSecret: "vault-secret"
+vaultKey: "token"
+
+# Vault Keys
+vault:
+  rekor:
+    url:
+      key: secret/rekor
+      property: url
+  github:
+    key: secret/github
+    property: pat
+  registry0:
+    host:
+      key: secret/registry0
+      property: host
+    user:
+      key: secret/registry0
+      property: user
+    password:
+      key: secret/registry0
+      property: password
+  registry1:
+    host:
+      key: secret/registry1
+      property: host
+    user:
+      key: secret/registry1
+      property: user
+    password:
+      key: secret/registry1
+      property: password
+  argocd:
+    password:
+      key: secret/argocd
+      property: password
+    username:
+      key: secret/argocd
+      property: username
+  git:
+    username:
+      key: secret/git
+      property: username
+    password:
+      key: secret/git
+      property: password

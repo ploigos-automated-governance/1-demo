@@ -1,0 +1,4 @@
+apiVersion: v2
+version: 0.1
+name: psr-config
+description:  Creates an ExternalSecret with a Ploigos Step Runner config file (psr.yaml)

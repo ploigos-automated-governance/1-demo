@@ -1,0 +1,87 @@
+apiVersion: external-secrets.io/v1beta1
+kind: ExternalSecret
+metadata:
+  name: external-{{ .Values.psrConfig.secretName }}
+  labels:
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ .Values.appName }}
+    app.kubernetes.io/version: {{ .Chart.Version | quote }}
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+spec:
+  refreshInterval: "15s"
+  secretStoreRef:
+    name: {{ .Values.vaultStorage }}
+    kind: SecretStore
+  target:
+    name: {{ .Values.psrSecrets.secretName }}
+    template:
+      data:
+        ###############################################################################################################
+        #                                           SECURITY WARNING !!!!!!                                           #
+        # This template pulls sensitive values out of Vault. The Ploigos Step Runner will PRINT THEM OUT IN THE       #
+        # PIPELINE LOG  unless it knows to obfuscate them. Currently, PSR decides which things to obfuscate based     #
+        # on a regex. If the key contains "username" or "password" (case insensitive), the value is redacted.         #
+        # Otherwise, the value is printed in plain text. If you have a value to add here and the key does not match   #
+        # this pattern, please request (or make) an enhancement to the Ploigos Step Runner to cover your use case.    #
+        ###############################################################################################################
+        {{ .Values.psrSecrets.secretName }}.yml: |
+         step-runner-config:
+           config-decryptors:
+             - implementer: ObfuscationDefaults
+           global-defaults:
+             container-registries:
+               {{`{{ .registry0Host }}`}}:
+                 username: {{`{{ .registry0User }}`}}
+                 password: {{`{{ .registry0Password }}`}}
+                 {{`{{ .registry1Host }}`}}:
+                 username: {{`{{ .registry1User }}`}}
+                 password: {{`{{ .registry1Password }}`}}
+           deploy:
+             - implementer: ArgoCDDeploy
+               config:
+                 argocd-username: {{`{{ .argocdUsername }}`}}
+                 argocd-password: {{`{{ .argocdPassword }}`}}
+                 git-username: {{`{{ .gitUsername }}`}}
+                 git-password: {{`{{ .gitPassword }}`}}
+  data:
+    - secretKey: registry0Host
+      remoteRef:
+        key: {{ .Values.vault.registry0.host.key }}
+        property: {{ .Values.vault.registry0.host.property }}
+    - secretKey: registry0User
+      remoteRef:
+        key: {{ .Values.vault.registry0.user.key }}
+        property: {{ .Values.vault.registry0.user.property }}
+    - secretKey: registry0Password
+      remoteRef:
+        key: {{ .Values.vault.registry0.password.key }}
+        property: {{ .Values.vault.registry0.password.property }}
+    - secretKey: registry1Host
+      remoteRef:
+        key: {{ .Values.vault.registry1.host.key }}
+        property: {{ .Values.vault.registry1.host.property }}
+    - secretKey: registry1User
+      remoteRef:
+        key: {{ .Values.vault.registry1.user.key }}
+        property: {{ .Values.vault.registry1.user.property }}
+    - secretKey: registry1Password
+      remoteRef:
+        key: {{ .Values.vault.registry1.password.key }}
+        property: {{ .Values.vault.registry1.password.property }}
+    - secretKey: argocdPassword
+      remoteRef:
+        key: {{ .Values.vault.argocd.password.key }}
+        property: {{ .Values.vault.argocd.password.property }}
+    - secretKey: argocdUsername
+      remoteRef:
+        key: {{ .Values.vault.argocd.username.key }}
+        property: {{ .Values.vault.argocd.username.property }}
+    - secretKey: gitUsername
+      remoteRef:
+        key: {{ .Values.vault.git.username.key }}
+        property: {{ .Values.vault.git.username.property }}
+    - secretKey: gitPassword
+      remoteRef:
+        key: {{ .Values.vault.git.password.key }}
+        property: {{ .Values.vault.git.password.property }}

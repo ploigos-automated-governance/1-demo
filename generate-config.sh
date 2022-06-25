@@ -4,6 +4,7 @@ set -ex -o pipefail
 # Generate new configmap
 oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq '.data[]' > config.yml
 REKOR_SERVER_URL=$(echo "https://$(oc get route rekor-server-route -n sigstore -o yaml | yq '.status.ingress[].host')/") envsubst < ./config-additions.yml >> config.yml
+oc exec -n vault -it vault-0 -- vault kv put secret/recor url=${REKOR_SERVER_URL}
 
 # Generate new secret
 oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq '.data[]' | base64 -d > config-secrets.yml
