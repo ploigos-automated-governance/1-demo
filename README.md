@@ -104,43 +104,17 @@ Let's install and configure the software factory!  We are using [Kustomize](http
 **IMPORTANT**
 Our root directory, unless otherwise stated in the directions, will be the `1-demo` directory.  Many of these directions assume you are in the `1-demo` directory.  If not stated otherwise, make sure to run commands from the `1-demo` directory.
 
-**1 . Clone the Ploigos Automated Governance Platform repository.**
+**1. Run the software factory installation script.**
+
+This command starts the installation.
 
 ```shell
-git clone git@github.com:ploigos-automated-governance/2-platform-ops.git
-```
-
-**2 . Navigate to the cloned repo root folder: `2-platform-ops`. Begin the software factory installation with the following commands.**
-
-```shell
-oc apply -k argo-cd-apps/base/ploigos-software-factory/
-oc delete limitrange --all -n devsecops
-oc delete limitrange --all -n sigstore
-```
-
-The first command starts the installation.  The second two commands, `oc delete limitrange ...` are there as a precaution.  Some OpenShift configurations will set compute, storage, and memory limits on newly created namespaces.  For this demo, we are going to remove those limits.
-
-**Get An Error?**
-
-If you received an error about the `PloigosPlatform` not being found, it may look like this:
-
-```shell
-error: unable to recognize "argo-cd-apps/base/ploigos-software-factory/": no matches for kind "PloigosPlatform" in version "redhatgov.io/v1alpha1"
-```
-
-Simply wait 2 - 3 minutes and then re-invoke the following command:
-
-```shell
-oc apply -k argo-cd-apps/base/ploigos-software-factory/
-```  
-
-Why did this happen?
-
-The `oc create` command creates a `PloigosPlatform` custom resource.  This `PloigosPlatform` resource depends upon the sofware factory operator being completely registered.  It may happen that the operator has not registered the customer resource definitions by the time the `PloigosPlatform` resource is created.
+./install.sh
+``` 
 
 **Now, We Wait**
 
-This begins the 5 - 10 minute installation process.  If the network connection is slower than normal, this could take upwards of 15 minutes.
+This begins the 5 - 10 minute installation process.  If the network connection is slower than normal, this could take upwards of 15 minutes. It is normal for it to retry creating resources multiple times, because multiple interdependent resources are being created asynchronously.
 
 To validate the platform has been set up properly, do the following.
 
@@ -149,62 +123,33 @@ ploigos-operator-controller-manager-[random-characters-here]```. If complete, th
   
   ![Picture of logs for completed Ploigos Platforom install](assets/ploigos-softwrare-factory-platform-complete-screen.png)
 
-**Once Installed**
+**Viewing Your Credentials**
 
-Now that you have validated the installation, let's obtain our username and password that we'll use for the rest of this demo for the software factory tooling.
+The script prints out information about the installed environment, including credentials. You will need this information to finish these instructions. You may want to copy it to somewhere safe.
 
-When we initially setup the software factory platform, a random password was generated for each tool, and then associated with the username *ploigos*.  To get the password, use the following command:
+If you lose the credentials, you can safely re-run the install script. It will not change anything important, but it will print out the same information again.
 
-  ```shell
-  oc get secret ploigos-service-account-credentials -n devsecops -o yaml | yq .data.password | base64 -d && echo 
-  ```
+You can also access the same URLs by clicking on them in the OpenShift web console. Select Networking -> Routes in the main navigation menu. Make sure the `devsecops` project is selected. Select the URLs in the Location column.
 
-Save this password somewhere for quick copy and paste.  We recommend creating a text file named *pw* in your `1-demo` directory, then pasting your credentials in there.
+**2. Validate tool access.**
 
-
-Let's validate your tool access now. To access the tool, simply navigate to the `Routes` information by using the left-sided navigation of the OpenShift web console. Click on `Networking`, the select `Routes`. You'll see all your routes for the namespace you are currently in.  To see all the software factory tooling routes, make sure you are in the `devsecops` namespace.
-
-Click on the location for `gitea` and `argocd-server`.  Make sure you can log into those.
+Let's validate your tool access now. Use the information displayed by the script to log into Gitea and ArgoCD.
 
 Now that everything is installed and you can access the tools, continue to the next steps!
 
-**3 . Install the SigStore components, Rekor.**
+**NOTE:** ArgoCD may take a few minutes to start its authentication component (dex). If you get an authentication error when you try to log in, wait for a few minutes and try again. If you still get an authentication error, restart Dex by running `oc delete po -l app.kubernetes.io/name=argocd-dex-server` and try again after another minute.
 
-**Quick Check** - Make sure you are in the `2-platform-ops` directory before continuing!
+**3. Validate that Rekor install is complete.**
 
-Use the `oc` command to switch too the `devsecops` project.
-```shell
-oc project devsecops
-```
+Installing Rekor could take an additional 3 - 5 minutes after the installation script exits.
 
-Once you have validated you are in the devsecops project, run the following command to set up the SigStore components:
+You can open the ArgoCD web interface to validate that Rekor is up-and-running. Make sure to use the ArgoCD instance that was created in the `devsecops` namespace. Use the URL printed by the install script, or navigate to your `Routes` in the devsecops namespace and click on the `argocd-server` Location.
 
-```shell
-oc apply -f argo-cd-apps/app-of-apps/simple-software-supply-chain-platform.yml
-```
+You'll see a box titled "rekor-application".  When the Status line says "Healthy" and "Synced", you have completely installed Rekor.
 
-Installing Rekor should take about 3 - 5 minutes.
+In the OpenShift web console, select Networking -> Routes in the main navigation menu. Select the `sigstore` project in the "Project:" dropdown at the top left. Then find the Location colum. Select the URL in that column. You should see a simple website with the heading `Rekor Server`.  That's it, next steps!
 
-You can open the ArgoCD web interface to validate that Rekor is up-and-running. Make sure to use the ArgoCD instance that was created in the `devsecops` namespace. Navigate to your `Routes` in the devsecops namespace and click on the `argocd-server` Location.
-
-Use the username `ploigos` and the generated password that you previously retrieved from the secret.
-
-You'll see three boxes.  When all three are green, you have completely installed Rekor.
-
-Navigate to your `Routes` in the sigstore namespace.  Click on the `rekor-server-route` Location, and you'll get a simple website with the heading `Rekor Server`.  That's it, next steps!
-
-**4 . Resize the Nexus PVC**
-
-The default storage size is not enough for continued use with this demo.  Therefore, we need to increase it from its current setting to 100 GiB.
-
-```shell
-oc patch pvc nexus-sonatype-nexus-data -p '{"spec":{"resources":{"requests":{"storage":"100Gi"}}}}' -n devsecops
-oc delete po -l app=sonatype-nexus -n devsecops
-```
-
-The pod will be deleted, then a new one will be created.  With the creation of this new pod, the PVC expansion will be registered.
-
-**5 . Install the everything pipeline using Helm**
+**4. Install the everything pipeline using Helm**
 
 **IMPORTANT**
 
@@ -216,13 +161,11 @@ git clone https://github.com/ploigos/ploigos-charts.git
 helm install -f values.yaml everything-pipeline ploigos-charts/charts/ploigos-workflow/tekton-pipeline-everything/
 ```
 
-**6 . Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).**
+**5. Create the k8s resources for a Pipeline as a Service (EventLister / TriggerTemplate / Route).**
 
-As with the previous step, make sure you are in the `1-demo` directory before excuting these commands.
+As with the previous step, make sure you are in the `1-demo` directory before executing these commands.
 
 ```shell
-oc create -f el.yml
-oc create -f tt.yml
 oc expose svc el-everything-pipeline
 ```
 

@@ -1,4 +1,9 @@
+*.bak
+2-platform-ops/
 config-secrets.yml
 config.yml
+ploigos-charts/
 reference-quarkus-mvn/
 reference-quarkus-mvn-gitops/
+
+

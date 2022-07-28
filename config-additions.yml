@@ -7,7 +7,7 @@
   - name: Sign Evidence
     implementer: RekorSignEvidence
     config:
-      rekor-server-url: REKOR_SERVER_URL
+      rekor-server-url: $REKOR_SERVER_URL
 
   audit-attestation:
   - name: Audit Attestation DEV
