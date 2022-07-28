@@ -16,7 +16,7 @@ PLATFORM_OPS_DIR=${SCRIPT_DIR}/2-platform-ops
 if [ "${VERBOSE}" == "true" ]; then set +x; fi
 
 # Clone the platform-ops repository if it has not already been cloned
-[ ! -d ${PLATFORM_OPS_DIR} ] && git clone https://github.com/ploigos-automated-governance/1-demo.git ${PLATFORM_OPS_DIR}
+[ ! -d ${PLATFORM_OPS_DIR} ] && git clone https://github.com/ploigos-automated-governance/2-platform-ops.git ${PLATFORM_OPS_DIR}
 
 # Run the platform-ops install script
 ${PLATFORM_OPS_DIR}/install-platform.sh
