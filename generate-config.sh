@@ -6,7 +6,7 @@ oc get cm ploigos-platform-config-mvn -n devsecops -o yaml | yq '.data[]' > conf
 REKOR_SERVER_URL=$(echo "https://$(oc get route rekor-server-route -n sigstore -o yaml | yq '.status.ingress[].host')/") envsubst < ./config-additions.yml >> config.yml
 
 # Generate new secret
-oc get secret ploigos-platform-config-secrets-mvn -o yaml | yq '.data[]' | base64 -d > config-secrets.yml
+oc get secret ploigos-platform-config-secrets-mvn -n devsecops -o yaml | yq '.data[]' | base64 -d > config-secrets.yml
 PKEY=$(yq '.step-runner-config.sign-container-image[].config.container-image-signer-pgp-private-key' config-secrets.yml)
 yq -i ".step-runner-config.global-defaults.signer-pgp-private-key = \"$PKEY\"" config-secrets.yml
 cat config-secrets-additions.yml >> config-secrets.yml
